@@ -1,1 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>MultiPendulum</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter">
+    <style>
+        body {font-family: Inter, sans-serif;}
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="header">
+        <div class="header-spacer-container">
+            <div id="header-spacer"></div>
+        </div>
+
+        <div class="grid-container">
+            <div id="replay-time-upper" class="grid-left">0</div>
+            <div id="replay-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Replayed</div>
+
+            <div id="simulated-time-upper" class="grid-left">0</div>
+            <div id="simulated-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Simulated</div>
+        </div>
+    </div>
+</div>
+
+<div class="complete-container">
+    <canvas id="canvas" class="simulation-canvas"></canvas>
+</div>
+
+<script>
+    let prototype
+    let simulation
+
+    function resetAllLabels() {
+        if (simulation != null) {
+            simulation.end()
+            simulation = null
+        }
+
+        document.getElementById("failure-text-container").innerHTML = ""
+
+        document.getElementById("replay-time-upper").innerHTML = "0"
+        document.getElementById("replay-time-lower").innerHTML = ".00"
+        document.getElementById("simulated-time-upper").innerHTML = "0"
+        document.getElementById("simulated-time-lower").innerHTML = ".00"
+
+        document.getElementById("update-replaying-button").innerHTML = "Start Replaying"
+        document.getElementById("update-simulating-button").innerHTML = "Start Simulating"
+    }
+
+    function resetReplaying() {
+        if (simulation != null) {
+            simulation.isReplaying = false
+            simulation.replayFrameID = 0
+
+            document.getElementById("update-replaying-button").innerHTML = "Start Replaying"
+
+            document.getElementById("replay-time-upper").innerHTML = "0"
+            document.getElementById("replay-time-lower").innerHTML = ".00"
+        }
+    }
+
+    function updateReplaying() {
+        if (simulation != null) {
+            if (!simulation.isReplaying) {
+                simulation.isReplaying = true
+                simulation.isSimulating = false
+
+                document.getElementById("update-replaying-button").innerHTML = "Stop Replaying"
+                document.getElementById("update-simulating-button").innerHTML = "Start Simulating"
+            } else {
+                simulation.isReplaying = false
+
+                document.getElementById("update-replaying-button").innerHTML = "Start Simulating"
+            }
+        }
+    }
+
+    function updateSimulating() {
+        if (simulation == null) {
+            simulation = prototype.simulation
+        }
+
+        if (simulation != null) {
+            if (!simulation.isSimulating) {
+                simulation.isReplaying = false
+                simulation.isSimulating = true
+
+                document.getElementById("update-replaying-button").innerHTML = "Start Replaying"
+                document.getElementById("update-simulating-button").innerHTML = "Stop Simulating"
+            } else {
+                simulation.isSimulating = false
+
+                document.getElementById("update-simulating-button").innerHTML = "Start Simulating"
+            }
+        }
+    }
+</script>
+
+<div class="complete-container">
+    <div class="control-button-container">
+        <button id="reset-replaying-button" class="control-button" onclick="resetReplaying()">
+            Reset Replaying
+        </button>
+        <button id="update-replaying-button" class="control-button" onclick="updateReplaying()">
+            Start Replaying
+        </button>
+        <button id="update-simulating-button" class="control-button" onclick="updateSimulating()">
+            Start Simulating
+        </button>
+    </div>
+</div>
+
+<script type="module">
+    const canvas = document.getElementById("canvas")
+    canvas.width = 500
+    canvas.height = 500
+
+    // Testing Simulation
+
+    import { SimulationPrototype } from "./scripts/SimulationPrototype.js";
+
+    prototype = new SimulationPrototype()
+    prototype.present()
+
+    simulation = prototype.simulation
+</script>
+
+<div class="complete-container">
+    <div class="options-container">
+        <div id="failure-text-container"></div>
+
+        <div class="options-spacer"></div>
+        <h2 class="options-header">Customize</h2>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="num-pendulums-slider">Number of Pendulums</label></p>
+        <p class="options-text" id="num-pendulums-text">3</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(-5)">-5</button>
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(-1)">-1</button>
+            <input class="options-slider" type="range" min="1" max="30" value="3" id="num-pendulums-slider">
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(1)">+1</button>
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(5)">+5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="angle-slider">Angle</label></p>
+        <p class="options-text" id="angle-text">135 degrees</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-5)">-5</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-1)">-1</button>
+            <input class="options-slider" type="range" min="0" max="180" value="135" id="angle-slider">
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(1)">+1</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(5)">+5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="angular-velocity-slider">Angular Velocity</label></p>
+        <p class="options-text" id="angular-velocity-text">0 revolutions/second</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-5)">-.5</button>
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="-50" max="50" value="0" id="angular-velocity-slider">
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(5)">+.5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="combined-length-slider">Length (all pendulums combined)</label></p>
+        <p class="options-text" id="combined-length-text">1 meter</p>
+        <div class="integer-change-button-container-2">
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-100)">-10</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-10)">-1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="-10000" max="20000" value="0" id="combined-length-slider">
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(10)">+1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(100)">+10</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="gravity-slider">Gravity</label></p>
+        <p class="options-text" id="gravity-text">9.8 meters/second/second</p>
+        <div class="integer-change-button-container-2">
+            <button class="integer-change-button" onclick="changeGravityBy(-100)">-10</button>
+            <button class="integer-change-button" onclick="changeGravityBy(-10)">-1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="0" max="1000" value="98" id="gravity-slider">
+            <button class="integer-change-button" onclick="changeGravityBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(10)">+1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(100)">+10</button>
+        </div>
+
+        <div class="options-spacer"></div>
+    </div>
+</div>
+
+<script>
+    // Number of pendulums
+
+    const numPendulumsSlider = document.getElementById("num-pendulums-slider")
+    const numPendulumsText = document.getElementById("num-pendulums-text")
+
+    numPendulumsSlider.oninput = () => {
+        const numPendulums = numPendulumsSlider.value
+
+        if (numPendulums === prototype.numPendulums) {
+            return
+        }
+
+        resetAllLabels()
+
+        numPendulumsText.innerHTML = numPendulums.toString()
+
+        prototype.numPendulums = numPendulums
+        simulation = null
+        prototype.present()
+    }
+
+    function changeNumPendulumsBy(change) {
+        const rawNumPendulums = prototype.numPendulums + change
+        const numPendulums = Math.min(100, Math.max(1, rawNumPendulums))
+
+        if (numPendulums === prototype.numPendulums) {
+            return
+        }
+
+        resetAllLabels()
+
+        numPendulumsSlider.value = numPendulums
+        numPendulumsText.innerHTML = numPendulums.toString()
+
+        prototype.numPendulums = numPendulums
+        simulation = null
+        prototype.present()
+    }
+
+    // Angle
+
+    const angleSlider = document.getElementById("angle-slider")
+    const angleText = document.getElementById("angle-text")
+
+    angleSlider.oninput = () => {
+        const angleDegrees = angleSlider.value
+        const anglePercent = angleDegrees / 1.8
+
+        if (anglePercent === prototype.defaultAnglePercent) {
+            return
+        }
+
+        resetAllLabels()
+
+        angleText.innerHTML = `${angleDegrees} degrees`
+
+        prototype.defaultAnglePercent = angleDegrees / 1.8
+        simulation = null
+        prototype.present()
+    }
+
+    function changeAngleDegreesBy(change) {
+        const rawAngleDegrees = Math.round(prototype.defaultAnglePercent * 1.8) + change
+        const angleDegrees = Math.min(360, Math.max(0, rawAngleDegrees))
+        const anglePercent = angleDegrees / 1.8
+
+        if (anglePercent === prototype.defaultAnglePercent) {
+            return
+        }
+
+        resetAllLabels()
+
+        angleSlider.value = angleDegrees
+        angleText.innerHTML = `${angleDegrees} degrees`
+
+        prototype.defaultAnglePercent = anglePercent
+        simulation = null
+        prototype.present()
+    }
+
+    // Angular Velocity
+
+    const angularVelocitySlider = document.getElementById("angular-velocity-slider")
+    const angularVelocityText = document.getElementById("angular-velocity-text")
+
+    function getAngularVelocityHzString(angularVelocityHz) {
+        if (angularVelocityHz === 0) {
+            return "0 revolutions/second"
+        } else if (angularVelocityHz === 1) {
+            return "1 rev/s counterclockwise"
+        } else if (angularVelocityHz === -1) {
+            return "1 rev/s clockwise"
+        } else if (angularVelocityHz > 0) {
+            let roundedString
+
+            if (angularVelocityHz % 1 !== 0) {
+                roundedString = angularVelocityHz.toFixed(1)
+            } else {
+                roundedString = angularVelocityHz.toString()
+            }
+
+            return `${roundedString} rev/s counterclockwise`
+        } else {
+            let roundedString
+
+            if (angularVelocityHz % 1 !== 0) {
+                roundedString = (-angularVelocityHz).toFixed(1)
+            } else {
+                roundedString = (-angularVelocityHz).toString()
+            }
+
+            return `${roundedString} rev/s clockwise`
+        }
+    }
+
+    angularVelocitySlider.oninput = () => {
+        const angularVelocityHz = angularVelocitySlider.value / 10
+        const angularVelocity = angularVelocityHz * (2 * Math.PI)
+
+        if (angularVelocity === prototype.defaultAngularVelocity) {
+            return
+        }
+
+        resetAllLabels()
+
+        angularVelocityText.innerHTML = getAngularVelocityHzString(angularVelocityHz)
+
+        prototype.defaultAngularVelocity = angularVelocity
+        simulation = null
+        prototype.present()
+    }
+
+    function changeAngularVelocityHzBy(change) {
+        let rawAngularVelocityHz = prototype.defaultAngularVelocity / (2 * Math.PI)
+        rawAngularVelocityHz = Math.round(rawAngularVelocityHz * 10) + change
+        rawAngularVelocityHz /= 10
+
+        const angularVelocityHz = Math.min(5, Math.max(-5, rawAngularVelocityHz))
+        const angularVelocity = angularVelocityHz * (2 * Math.PI)
+
+        if (angularVelocity === prototype.defaultAngularVelocity) {
+            return
+        }
+
+        resetAllLabels()
+
+        angularVelocitySlider.value = Math.round(angularVelocityHz * 10)
+        angularVelocityText.innerHTML = getAngularVelocityHzString(angularVelocityHz)
+
+        prototype.defaultAngularVelocity = angularVelocity
+        simulation = null
+        prototype.present()
+    }
+
+    // Combined Length
+
+    const combinedLengthSlider = document.getElementById("combined-length-slider")
+    const combinedLengthText = document.getElementById("combined-length-text")
+
+    function getLengthString(length, doingUnits = true) {
+        let output
+
+        if (length % 1 !== 0) {
+            output = length.toFixed(1)
+        } else {
+            output = length.toString()
+        }
+
+        if (doingUnits) {
+            output = `${output} meter${output !== 1 ? "s" : ""}`
+        }
+
+        return output
+    }
+
+    function convertLengthLogToLin(logLength) {
+        const linLength = Math.pow(10, logLength / 10000)
+        return roundLinLength(linLength)
+    }
+
+    function roundLinLength(linLength) {
+        return Math.round(linLength * 10) / 10
+    }
+
+    function convertLengthLinToLog(linLength) {
+        const logLength = Math.log(linLength) * 10000
+        return Math.round(logLength)
+    }
+
+    combinedLengthSlider.oninput = () => {
+        const logLength = combinedLengthSlider.value
+        const linLength = convertLengthLogToLin(logLength)
+
+        if (linLength === prototype.combinedPendulumLength) {
+            return
+        }
+
+        resetAllLabels()
+
+        combinedLengthText.innerHTML = getLengthString(linLength)
+
+        prototype.combinedPendulumLength = linLength
+        simulation = null
+        prototype.present()
+    }
+
+    function changeCombinedLengthBy(change) {
+        let rawLength = Math.round(prototype.combinedPendulumLength * 10)
+        rawLength = (rawLength + change) / 10
+
+        const linLength = Math.min(100, Math.max(0.1, rawLength))
+
+        if (linLength === prototype.combinedPendulumLength) {
+            return
+        }
+
+        resetAllLabels()
+
+        combinedLengthSlider.value = convertLengthLinToLog(linLength)
+        combinedLengthText.innerHTML = getLengthString(linLength)
+
+        prototype.combinedPendulumLength = linLength
+        simulation = null
+        prototype.present()
+    }
+
+    // Gravity
+
+    const gravitySlider = document.getElementById("gravity-slider")
+    const gravityText = document.getElementById("gravity-text")
+
+    function getGravityString(gravity) {
+        if (gravity === 1) {
+            return "1 meter/second/second"
+        } else if (gravity === -1) {
+            return "-1 meter/second/second"
+        } else if (gravity % 1 === 0) {
+            return `${gravity} meters/second/second`
+        } else {
+            return `${gravity.toFixed(1)} meters/second/second`
+        }
+    }
+
+    gravitySlider.oninput = () => {
+        const gravity = gravitySlider.value / 10
+
+        if (gravity === prototype.gravitationalAcceleration) {
+            return
+        }
+
+        resetAllLabels()
+
+        gravityText.innerHTML = getGravityString(gravity)
+
+        prototype.gravitationalAcceleration = gravity
+        simulation = null
+        prototype.present()
+    }
+
+    function changeGravityBy(change) {
+        let gravity = prototype.gravitationalAcceleration
+        gravity = Math.round(gravity * 10) + change
+        gravity /= 10
+
+        if (gravity === prototype.gravitationalAcceleration) {
+            return
+        }
+
+        resetAllLabels()
+
+        gravitySlider.value = Math.round(gravity * 10)
+        gravityText.innerHTML = getGravityString(gravity)
+
+        prototype.gravitationalAcceleration = gravity
+        simulation = null
+        prototype.present()
+    }
+</script>
+
+</body>
+</html>
