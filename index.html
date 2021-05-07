@@ -10,18 +10,36 @@
     <style>
         body {font-family: Inter, sans-serif;}
     </style>
-    <script src="script.js" rel="script"></script>
-    <script>
+</head>
+<body>
 
+<div class="header-container">
+    <div class="header">
+        <div class="header-spacer-container">
+            <div id="header-spacer"></div>
+        </div>
 
-let prototype
-let simulation
+        <div class="grid-container">
+            <div id="replay-time-upper" class="grid-left">0</div>
+            <div id="replay-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Replayed</div>
 
-        
-    
-    
-    
-        function resetAllLabels() {
+            <div id="simulated-time-upper" class="grid-left">0</div>
+            <div id="simulated-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Simulated</div>
+        </div>
+    </div>
+</div>
+
+<div class="complete-container">
+    <canvas id="canvas" class="simulation-canvas"></canvas>
+</div>
+
+<script>
+    let prototype
+    let simulation
+
+    function resetAllLabels() {
         if (simulation != null) {
             simulation.end()
             simulation = null
@@ -85,31 +103,7 @@ let simulation
             }
         }
     }
-    </script>
-</head>
-<body>
-
-<div class="header-container">
-    <div class="header">
-        <div class="header-spacer-container">
-            <div id="header-spacer"></div>
-        </div>
-
-        <div class="grid-container">
-            <div id="replay-time-upper" class="grid-left">0</div>
-            <div id="replay-time-lower" class="grid-middle">.00</div>
-            <div class="grid-right">s Replayed</div>
-
-            <div id="simulated-time-upper" class="grid-left">0</div>
-            <div id="simulated-time-lower" class="grid-middle">.00</div>
-            <div class="grid-right">s Simulated</div>
-        </div>
-    </div>
-</div>
-
-<div class="complete-container">
-    <canvas id="canvas" class="simulation-canvas"></canvas>
-</div>
+</script>
 
 <div class="complete-container">
     <div class="control-button-container">
@@ -124,6 +118,21 @@ let simulation
         </button>
     </div>
 </div>
+
+<script type="module">
+    const canvas = document.getElementById("canvas")
+    canvas.width = 500
+    canvas.height = 500
+
+    // Testing Simulation
+
+    import { SimulationPrototype } from "./scripts/SimulationPrototype.js";
+
+    prototype = new SimulationPrototype()
+    prototype.present()
+
+    simulation = prototype.simulation
+</script>
 
 <div class="complete-container">
     <div class="options-container">
@@ -149,11 +158,11 @@ let simulation
         <p class="options-text"><label for="angle-slider">Angle</label></p>
         <p class="options-text" id="angle-text">135 degrees</p>
         <div class="integer-change-button-container">
-            <button class="integer-change-button" onclick="this.changeAngleDegreesBy(-5)">-5</button>
-            <button class="integer-change-button" onclick="this.changeAngleDegreesBy(-1)">-1</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-5)">-5</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-1)">-1</button>
             <input class="options-slider" type="range" min="0" max="180" value="135" id="angle-slider">
-            <button class="integer-change-button" onclick="this.changeAngleDegreesBy(1)">+1</button>
-            <button class="integer-change-button" onclick="this.changeAngleDegreesBy(5)">+5</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(1)">+1</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(5)">+5</button>
         </div>
 
         <div class="options-spacer"></div>
@@ -201,19 +210,6 @@ let simulation
 </div>
 
 <script>
-            console.log(7)
-        prototype = new SimulationPrototype()
-        console.log(8)
-        simulation = prototype.simulation
-        console.log(9)
-    
-    
-    const canvas = document.getElementById("canvas")
-    canvas.width = 500
-    canvas.height = 500
-
-    prototype.present()
-    
     // Number of pendulums
 
     const numPendulumsSlider = document.getElementById("num-pendulums-slider")
