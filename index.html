@@ -11,7 +11,124 @@
         body {font-family: Inter, sans-serif;}
     </style>
     <script>
-        "use strict"
+
+    </script>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="header">
+        <div class="header-spacer-container">
+            <div id="header-spacer"></div>
+        </div>
+
+        <div class="grid-container">
+            <div id="replay-time-upper" class="grid-left">0</div>
+            <div id="replay-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Replayed</div>
+
+            <div id="simulated-time-upper" class="grid-left">0</div>
+            <div id="simulated-time-lower" class="grid-middle">.00</div>
+            <div class="grid-right">s Simulated</div>
+        </div>
+    </div>
+</div>
+
+<div class="complete-container">
+    <canvas id="canvas" class="simulation-canvas"></canvas>
+</div>
+
+<div class="complete-container">
+    <div class="control-button-container">
+        <button id="reset-replaying-button" class="control-button" onclick="resetReplaying()">
+            Reset Replaying
+        </button>
+        <button id="update-replaying-button" class="control-button" onclick="updateReplaying()">
+            Start Replaying
+        </button>
+        <button id="update-simulating-button" class="control-button" onclick="updateSimulating()">
+            Start Simulating
+        </button>
+    </div>
+</div>
+
+<div class="complete-container">
+    <div class="options-container">
+        <div id="failure-text-container"></div>
+
+        <div class="options-spacer"></div>
+        <h2 class="options-header">Customize</h2>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="num-pendulums-slider">Number of Pendulums</label></p>
+        <p class="options-text" id="num-pendulums-text">3</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(-5)">-5</button>
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(-1)">-1</button>
+            <input class="options-slider" type="range" min="1" max="30" value="3" id="num-pendulums-slider">
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(1)">+1</button>
+            <button class="integer-change-button" onclick="changeNumPendulumsBy(5)">+5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="angle-slider">Angle</label></p>
+        <p class="options-text" id="angle-text">135 degrees</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-5)">-5</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(-1)">-1</button>
+            <input class="options-slider" type="range" min="0" max="180" value="135" id="angle-slider">
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(1)">+1</button>
+            <button class="integer-change-button" onclick="changeAngleDegreesBy(5)">+5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="angular-velocity-slider">Angular Velocity</label></p>
+        <p class="options-text" id="angular-velocity-text">0 revolutions/second</p>
+        <div class="integer-change-button-container">
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-5)">-.5</button>
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="-50" max="50" value="0" id="angular-velocity-slider">
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(5)">+.5</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="combined-length-slider">Length (all pendulums combined)</label></p>
+        <p class="options-text" id="combined-length-text">1 meter</p>
+        <div class="integer-change-button-container-2">
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-100)">-10</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-10)">-1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="-10000" max="20000" value="0" id="combined-length-slider">
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(10)">+1</button>
+            <button class="integer-change-button" onclick="changeCombinedLengthBy(100)">+10</button>
+        </div>
+
+        <div class="options-spacer"></div>
+
+        <p class="options-text"><label for="gravity-slider">Gravity</label></p>
+        <p class="options-text" id="gravity-text">9.8 meters/second/second</p>
+        <div class="integer-change-button-container-2">
+            <button class="integer-change-button" onclick="changeGravityBy(-100)">-10</button>
+            <button class="integer-change-button" onclick="changeGravityBy(-10)">-1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(-1)">-.1</button>
+            <input class="options-slider" type="range" min="0" max="1000" value="98" id="gravity-slider">
+            <button class="integer-change-button" onclick="changeGravityBy(1)">+.1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(10)">+1</button>
+            <button class="integer-change-button" onclick="changeGravityBy(100)">+10</button>
+        </div>
+
+        <div class="options-spacer"></div>
+    </div>
+</div>
+
+<script>
+            "use strict"
         
 class PendulumState {
     // a timestamp for this state
@@ -1780,34 +1897,10 @@ class TimeStepper {
         console.log(8)
         let simulation = prototype.simulation
         console.log(9)
-    </script>
-</head>
-<body>
-
-<div class="header-container">
-    <div class="header">
-        <div class="header-spacer-container">
-            <div id="header-spacer"></div>
-        </div>
-
-        <div class="grid-container">
-            <div id="replay-time-upper" class="grid-left">0</div>
-            <div id="replay-time-lower" class="grid-middle">.00</div>
-            <div class="grid-right">s Replayed</div>
-
-            <div id="simulated-time-upper" class="grid-left">0</div>
-            <div id="simulated-time-lower" class="grid-middle">.00</div>
-            <div class="grid-right">s Simulated</div>
-        </div>
-    </div>
-</div>
-
-<div class="complete-container">
-    <canvas id="canvas" class="simulation-canvas"></canvas>
-</div>
-
-<script>
-    function resetAllLabels() {
+    
+    
+    
+        function resetAllLabels() {
         if (simulation != null) {
             simulation.end()
             simulation = null
@@ -1871,106 +1964,14 @@ class TimeStepper {
             }
         }
     }
-</script>
-
-<div class="complete-container">
-    <div class="control-button-container">
-        <button id="reset-replaying-button" class="control-button" onclick="resetReplaying()">
-            Reset Replaying
-        </button>
-        <button id="update-replaying-button" class="control-button" onclick="updateReplaying()">
-            Start Replaying
-        </button>
-        <button id="update-simulating-button" class="control-button" onclick="updateSimulating()">
-            Start Simulating
-        </button>
-    </div>
-</div>
-
-<script>
+    
+    
     const canvas = document.getElementById("canvas")
     canvas.width = 500
     canvas.height = 500
 
     prototype.present()
-</script>
-
-<div class="complete-container">
-    <div class="options-container">
-        <div id="failure-text-container"></div>
-
-        <div class="options-spacer"></div>
-        <h2 class="options-header">Customize</h2>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="num-pendulums-slider">Number of Pendulums</label></p>
-        <p class="options-text" id="num-pendulums-text">3</p>
-        <div class="integer-change-button-container">
-            <button class="integer-change-button" onclick="changeNumPendulumsBy(-5)">-5</button>
-            <button class="integer-change-button" onclick="changeNumPendulumsBy(-1)">-1</button>
-            <input class="options-slider" type="range" min="1" max="30" value="3" id="num-pendulums-slider">
-            <button class="integer-change-button" onclick="changeNumPendulumsBy(1)">+1</button>
-            <button class="integer-change-button" onclick="changeNumPendulumsBy(5)">+5</button>
-        </div>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="angle-slider">Angle</label></p>
-        <p class="options-text" id="angle-text">135 degrees</p>
-        <div class="integer-change-button-container">
-            <button class="integer-change-button" onclick="changeAngleDegreesBy(-5)">-5</button>
-            <button class="integer-change-button" onclick="changeAngleDegreesBy(-1)">-1</button>
-            <input class="options-slider" type="range" min="0" max="180" value="135" id="angle-slider">
-            <button class="integer-change-button" onclick="changeAngleDegreesBy(1)">+1</button>
-            <button class="integer-change-button" onclick="changeAngleDegreesBy(5)">+5</button>
-        </div>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="angular-velocity-slider">Angular Velocity</label></p>
-        <p class="options-text" id="angular-velocity-text">0 revolutions/second</p>
-        <div class="integer-change-button-container">
-            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-5)">-.5</button>
-            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(-1)">-.1</button>
-            <input class="options-slider" type="range" min="-50" max="50" value="0" id="angular-velocity-slider">
-            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(1)">+.1</button>
-            <button class="integer-change-button" onclick="changeAngularVelocityHzBy(5)">+.5</button>
-        </div>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="combined-length-slider">Length (all pendulums combined)</label></p>
-        <p class="options-text" id="combined-length-text">1 meter</p>
-        <div class="integer-change-button-container-2">
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-100)">-10</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-10)">-1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-1)">-.1</button>
-            <input class="options-slider" type="range" min="-10000" max="20000" value="0" id="combined-length-slider">
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(1)">+.1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(10)">+1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(100)">+10</button>
-        </div>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="gravity-slider">Gravity</label></p>
-        <p class="options-text" id="gravity-text">9.8 meters/second/second</p>
-        <div class="integer-change-button-container-2">
-            <button class="integer-change-button" onclick="changeGravityBy(-100)">-10</button>
-            <button class="integer-change-button" onclick="changeGravityBy(-10)">-1</button>
-            <button class="integer-change-button" onclick="changeGravityBy(-1)">-.1</button>
-            <input class="options-slider" type="range" min="0" max="1000" value="98" id="gravity-slider">
-            <button class="integer-change-button" onclick="changeGravityBy(1)">+.1</button>
-            <button class="integer-change-button" onclick="changeGravityBy(10)">+1</button>
-            <button class="integer-change-button" onclick="changeGravityBy(100)">+10</button>
-        </div>
-
-        <div class="options-spacer"></div>
-    </div>
-</div>
-
-<script>
+    
     // Number of pendulums
 
     const numPendulumsSlider = document.getElementById("num-pendulums-slider")
