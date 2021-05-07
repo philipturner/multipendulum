@@ -37,8 +37,9 @@
 </div>
 
 <script>
-    let prototype
-    let simulation
+    let prototype = new SimulationPrototype()
+    console.log(prototype.numPendulums)
+    let simulation = prototype.simulation
 
     function resetAllLabels() {
         if (simulation != null) {
@@ -125,12 +126,7 @@
     canvas.width = 500
     canvas.height = 500
 
-    // Testing Simulation
-
-    prototype = new SimulationPrototype()
     prototype.present()
-
-    simulation = prototype.simulation
 </script>
 
 <div class="complete-container">
