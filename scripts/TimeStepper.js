@@ -49,7 +49,7 @@ export class CallStackNode {
 }
 
 export class TimeStepper {
-    static rkdpCoefficients = [
+    rkdpCoefficients = [
         [],
         [    1 / 5],
         [    3 / 40,        9 / 40],
@@ -58,7 +58,7 @@ export class TimeStepper {
         [ 9017 / 3168,   -355 / 33,   46732 / 5247,   49 / 176, -5103 / 18656]
     ]
 
-    static weights = [
+    weights = [
            35 / 384,
               0,
           500 / 1113,
@@ -67,7 +67,7 @@ export class TimeStepper {
            11 / 84
     ]
 
-    static altWeights = [
+    altWeights = [
           5197 / 57600,
                0,
           7571 / 16695,
@@ -323,7 +323,7 @@ export class TimeStepper {
         const forces = []
 
         for (let i = 0; i < 6; ++i) {
-            const rkdpCoefficients_i = TimeStepper.rkdpCoefficients[i]
+            const rkdpCoefficients_i = this.rkdpCoefficients[i]
 
             for (let j = 0; j < i; ++j) {
                 const ijValue = rkdpCoefficients_i[j]
@@ -362,8 +362,8 @@ export class TimeStepper {
         }
 
         for (let i = 0; i < 6; ++i) {
-            const weight = TimeStepper.weights[i]
-            const altWeight = TimeStepper.altWeights[i]
+            const weight = this.weights[i]
+            const altWeight = this.altWeights[i]
 
             const angularVelocities_i = angularVelocities[i]
             const forces_i = forces[i]
@@ -379,7 +379,7 @@ export class TimeStepper {
             }
         }
 
-        const altWeight6 = TimeStepper.altWeights[6]
+        const altWeight6 = this.altWeights[6]
 
         for (let i = 0; i < numPendulums; ++i) {
             const angle = angles[i]
