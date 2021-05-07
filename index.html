@@ -11,6 +11,8 @@
         body {font-family: Inter, sans-serif;}
     </style>
     <script>
+        "use strict"
+        
 class PendulumState {
     // a timestamp for this state
     // a value of one means 1/60 of a second
@@ -110,6 +112,7 @@ class Simulation {
 
     constructor({ numPendulums, gravitationalAcceleration },
                 { pendulumMasses, pendulumLengths, initialAngles, initialAngularVelocities }) {
+        console.log(4)
         this.numPendulums = numPendulums
         this.combinedPendulumLength = pendulumLengths.reduce((a, b) => a + b , 0)
         this.gravitationalAcceleration = gravitationalAcceleration
@@ -161,8 +164,10 @@ class Simulation {
                 }
             }
         }
-
+        
+        console.log(5)
         this.renderStates(this.frames[0])
+        console.log(6)
     }
 
     end() {
@@ -367,6 +372,7 @@ class SimulationPrototype {
     canvas
 
     constructor() {
+        console.log(1)
         this.combinedPendulumLength = 1
         this.gravitationalAcceleration = 9.8
 
@@ -390,9 +396,11 @@ class SimulationPrototype {
         this.doingLengthNormalization = false
 
         this.canvas = document.getElementById("canvas")
+        console.log(2)
     }
 
     get simulation() {
+        console.log(3)
         return new Simulation({
             numPendulums: this.numPendulums,
             gravitationalAcceleration: this.gravitationalAcceleration
@@ -1766,6 +1774,12 @@ class TimeStepper {
         return { nextState: nextState, error: error }
     }
 }
+
+        console.log(7)
+        const prototype = new SimulationPrototype()
+        console.log(8)
+        let simulation = prototype.simulation
+        console.log(9)
     </script>
 </head>
 <body>
@@ -1793,14 +1807,6 @@ class TimeStepper {
 </div>
 
 <script>
-    alert(1)
-    let prototype = new SimulationPrototype()
-    console.log(prototype.numPendulums)
-    alert(2)
-    alert(prototype.numPendulums)
-    alert(5)
-    let simulation = prototype.simulation
-
     function resetAllLabels() {
         if (simulation != null) {
             simulation.end()
