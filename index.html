@@ -1394,7 +1394,14 @@ class CallStackNode {
 
 class TimeStepper {
     rkdpCoefficients
-    weights
+    weights = [
+           35 / 384,
+              0,
+          500 / 1113,
+          125 / 192,
+        -2187 / 6784,
+           11 / 84
+        ]
     altWeights
 
     numPendulums
@@ -1417,15 +1424,6 @@ class TimeStepper {
         this.rkdpCoefficients.push([   44 / 45,      -56 / 15,      32 / 9])
         this.rkdpCoefficients.push([19372 / 6561, -25360 / 2187, 64448 / 6561, -212 / 729])
         this.rkdpCoefficients.push([ 9017 / 3168,   -355 / 33,   46732 / 5247,   49 / 176, -5103 / 18656])
-        
-        this.weights = [
-           35 / 384,
-              0,
-          500 / 1113,
-          125 / 192,
-        -2187 / 6784,
-           11 / 84
-        ]
         
         this.altWeights = [
           5197 / 57600,
