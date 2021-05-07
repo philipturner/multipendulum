@@ -10,6 +10,7 @@
     <style>
         body {font-family: Inter, sans-serif;}
     </style>
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -119,14 +120,12 @@
     </div>
 </div>
 
-<script type="module">
+<script>
     const canvas = document.getElementById("canvas")
     canvas.width = 500
     canvas.height = 500
 
     // Testing Simulation
-
-    import { SimulationPrototype } from "./scripts/SimulationPrototype.js";
 
     prototype = new SimulationPrototype()
     prototype.present()
