@@ -1,0 +1,28 @@
+on:
+  schedule:
+     - cron: "00 00 * * 0"
+
+jobs:
+  traffic:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: GitHub traffic
+      uses: sangonzal/repository-traffic-action@v0.1.4
+      env:
+        TRAFFIC_ACTION_TOKEN: ${ {secrets.TRAFFIC_ACTION_TOKEN }}
+    
+    - name: Send mail
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.MAIL_USERNAME }}
+        password: ${{ secrets.MAIL_PASSWORD }}
+        subject: GitHub traffic
+        to: ${{ secrets.MAIL_USERNAME }}
+        from: ${{ secrets.MAIL_SENDER_NAME }}
+        secure: true
+        attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
