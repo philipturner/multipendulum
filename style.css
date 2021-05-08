@@ -57,6 +57,7 @@ body {
 
 .grid-left {
     text-align: right;
+    font-size: 30px;
 }
 
 .grid-middle {
@@ -103,6 +104,7 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 30px;
+    text-align: center;
 }
 
 .options-header {
@@ -127,6 +129,7 @@ body {
     margin: 10px 5px;
     padding: 0;
     border: 0;
+    width: 200px;
 }
 
 .options-spacer {
@@ -142,7 +145,6 @@ body {
     width: auto;
     grid-template-columns: auto auto auto auto auto;
     align-items: center;
-    font-size: 30px;
 }
 
 .integer-change-button-container-2 {
@@ -150,7 +152,6 @@ body {
     width: auto;
     grid-template-columns: auto auto auto auto auto auto auto;
     align-items: center;
-    font-size: 30px;
 }
 
 .integer-change-button {
@@ -163,4 +164,84 @@ body {
     font-size: 18px;
     border-style: none;
     padding: 0;
+}
+
+@media only screen and (max-width: 600px) {
+    .header {
+        width: 100vw;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .body {
+        font-size: 5.4545454545455vw;
+    }
+
+    .header-spacer {
+        max-width: 36.36363636364vw;
+    }
+
+    .grid-left {
+        font-size: 5.4545454545455vw;
+    }
+
+    .grid-middle {
+        font-size: 5.4545454545455vw;
+        padding-right: 0.90909090909091vw;
+    }
+
+    .grid-right {
+        font-size: 5.4545454545455vw;
+        padding-right: 0.90909090909091vw;
+    }
+
+    .control-button-container {
+        font-size: 5.4545454545455vw;
+    }
+
+    .control-button {
+        border-radius: 1.4545454545455vw;
+        width: 36.36363636364vw;
+        font-size: 3.2727272727273vw;
+        padding: 5px 0.90909090909091vw;
+    }
+
+    .options-container {
+        font-size: 5.4545454545455vw;
+    }
+
+    .options-header {
+        margin: 10px 1.81818181818182vw;
+    }
+
+    .options-text {
+        font-size: 5.4545454545455vw;
+    }
+
+    #failure-text {
+        margin: 10px 1.81818181818182vw;
+        padding: 0 1.81818181818182vw;
+    }
+
+    .options-slider {
+        margin: 10px 0.90909090909091vw;
+        width: 36.36363636364vw;
+    }
+
+    .options-spacer {
+        width: 100vw;
+    }
+
+    .integer-change-button {
+        margin: 10px 0.90909090909091vw;
+        border-radius: 3.636363636364vw;
+        height: 7.2727272727273vw;
+        width: 7.2727272727273vw;
+        font-size: 3.2727272727273vw;
+    }
+
+    .simulation-canvas {
+        width: 90.90909090909091vw;
+        height: 90.90909090909091vw;
+    }
 }
