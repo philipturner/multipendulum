@@ -49,6 +49,10 @@ export class CallStackNode {
 }
 
 export class TimeStepper {
+    // Coefficients for the Runge-Kutta Dormand-Prince adaptive-step
+    // curve approximation algorithm - in theory, halving the time step
+    // makes the simulation 32 times more precise. This is similar
+    // to the Euler method, but much more precise.
     rkdpCoefficients = [
         [],
         [    1 / 5],
