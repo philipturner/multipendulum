@@ -36,6 +36,11 @@ export class SimulationPrototype {
     customAngleType
     customAngularVelocityType
 
+    storedRandomLengths
+    storedRandomMasses
+    storedRandomAnglePercents
+    storedRandomAngularVelocities
+
     _customLengthArray = []
     _customMassArray = []
     _customAnglePercentArray = []
@@ -52,6 +57,7 @@ export class SimulationPrototype {
     defaultAngularVelocity
 
     doingLengthNormalization
+    changeCombinedLengthHandler
 
     canvas
 
@@ -76,7 +82,7 @@ export class SimulationPrototype {
 
         this.numPendulums = 3
 
-        this.doingLengthNormalization = false
+        this.doingLengthNormalization = true
 
         this.canvas = document.getElementById("canvas")
     }
@@ -87,10 +93,10 @@ export class SimulationPrototype {
             gravitationalAcceleration: this.gravitationalAcceleration
         },
         {
-            pendulumMasses: this.masses,
-            pendulumLengths: this.lengths,
-            initialAngles: this.initialAnglesInRadians,
-            initialAngularVelocities: this.initialAngularVelocities
+            pendulumMasses: this._getMasses({ usingStoredRandom: true }),
+            pendulumLengths: this._getLengths({ usingStoredRandom: true }),
+            initialAngles: this._getInitialAnglesInRadians({ usingStoredRandom: true }),
+            initialAngularVelocities: this._getInitialAngularVelocities({ usingStoredRandom: true })
         })
     }
 
@@ -118,10 +124,11 @@ export class SimulationPrototype {
         context.lineJoin = "bevel"
         context.beginPath()
 
-        const lastJointAdjustment = windowSize / (windowSize + 10)
-        const lengthMultiplier = (windowRadius / this.combinedPendulumLength) * lastJointAdjustment
         const lengths = this.lengths
         const angles = this.initialAnglesInRadians
+
+        const lastJointAdjustment = windowSize / (windowSize + 10)
+        const lengthMultiplier = (windowRadius / this.combinedPendulumLength) * lastJointAdjustment
 
         let currentX = windowRadius
         let currentY = windowRadius
@@ -173,13 +180,34 @@ export class SimulationPrototype {
         }
     }
 
+    changeCombinedLength(newLength) {
+        const changeCombinedLengthHandler = this.changeCombinedLengthHandler
+
+        if (changeCombinedLengthHandler != null) {
+            changeCombinedLengthHandler(newLength)
+        }
+    }
+
     get lengths() {
+        return this._getLengths({
+            usingStoredRandom: false
+        })
+    }
+
+    _getLengths({ usingStoredRandom }) {
         const numPendulums = this.numPendulums
         let output
 
         if (!this.doingCustomLengths) {
             output = []
-            const length = this.combinedPendulumLength / numPendulums
+            let length
+
+            if (this.doingLengthNormalization) {
+                length = this.combinedPendulumLength / numPendulums
+            } else {
+                length = this.defaultLength
+                this.changeCombinedLength(length * numPendulums)
+            }
 
             for (let i = 0; i < numPendulums; ++i) {
                 output.push(length)
@@ -187,7 +215,15 @@ export class SimulationPrototype {
         } else {
             switch (this.customLengthType) {
                 case "randomLengths":
-                    output = this.randomLengths
+                    if (usingStoredRandom) {
+                        output = this.storedRandomLengths
+                    } else {
+                        output = this.randomLengths
+                        this.storedRandomLengths = output
+                    }
+
+                    const defaultLength = this.defaultLength
+                    output = output.map((a) => defaultLength * a)
                     break
                 case "endIsLongerLengths":
                     output = this.endIsLongerLengths
@@ -200,18 +236,20 @@ export class SimulationPrototype {
                     break
             }
 
-            if (this.doingLengthNormalization) {
-                const combinedLength = output.reduce((a, b) => a + b, 0)
-                const multiplier = 1 / combinedLength
+            const combinedLength = output.reduce((a, b) => a + b, 0)
 
+            if (this.doingLengthNormalization) {
+                const multiplier = this.combinedPendulumLength / combinedLength
                 output = output.map((a) => a * multiplier)
+            } else {
+                this.changeCombinedLength(combinedLength)
             }
         }
 
         return output
     }
 
-    get masses() {
+    _getMasses({ usingStoredRandom }) {
         if (!this.doingCustomMasses) {
             const output = []
             const numPendulums = this.numPendulums
@@ -226,7 +264,17 @@ export class SimulationPrototype {
         } else {
             switch (this.customMassType) {
                 case "randomMasses":
-                    return this.randomMasses
+                    let output
+
+                    if (usingStoredRandom) {
+                        output = this.storedRandomMasses
+                    } else {
+                        output = this.randomMasses
+                        this.storedRandomMasses = output
+                    }
+
+                    const defaultMass = this.defaultMass
+                    return output.map((a) => defaultMass * a)
                 case "endIsHeavierMasses":
                     return this.endIsHeavierMasses
                 case "endIsLighterMasses":
@@ -238,9 +286,15 @@ export class SimulationPrototype {
     }
 
     get initialAnglesInRadians() {
+        return this._getInitialAnglesInRadians({
+            usingStoredRandom: false
+        })
+    }
+
+    _getInitialAnglesInRadians({ usingStoredRandom }) {
         let output
 
-        if (!this.doingCustomLengths) {
+        if (!this.doingCustomInitialAnglePercents) {
             output = []
 
             const numPendulums = this.numPendulums
@@ -252,7 +306,12 @@ export class SimulationPrototype {
         } else {
             switch (this.customAngleType) {
                 case "randomAnglePercents":
-                    output = this.randomAnglePercents
+                    if (usingStoredRandom) {
+                        output = this.storedRandomAnglePercents
+                    } else {
+                        output = this.randomAnglePercents
+                        this.storedRandomAnglePercents = output
+                    }
                     break
                 case "staircaseAnglePercents":
                     output = this.staircaseAnglePercents
@@ -270,7 +329,7 @@ export class SimulationPrototype {
         return output.map((a) => a * (0.01 * Math.PI))
     }
 
-    get initialAngularVelocities() {
+    _getInitialAngularVelocities({ usingStoredRandom }) {
         if (!this.doingCustomInitialAngularVelocities) {
             const output = []
 
@@ -285,7 +344,13 @@ export class SimulationPrototype {
         } else {
             switch (this.customAngularVelocityType) {
                 case "randomAngularVelocities":
-                    return this.randomAngularVelocities
+                    if (usingStoredRandom) {
+                        return this.storedRandomAngularVelocities
+                    } else {
+                        const output = this.randomAngularVelocities
+                        this.storedRandomAngularVelocities = output
+                        return output
+                    }
                 default:
                     return this.customAngularVelocityArray
             }
@@ -300,8 +365,8 @@ export class SimulationPrototype {
         const numPendulums = this.numPendulums
         const defaultLength = this.defaultLength
 
-        const minLength = 0.1 * defaultLength
-        const maxLength = 2.0 * defaultLength
+        const minLength = 0.1
+        const maxLength = 2.0
 
         for (let i = 0; i < numPendulums; ++i) {
             output.push(mix(minLength, maxLength, Math.random()))
@@ -363,8 +428,8 @@ export class SimulationPrototype {
         const numPendulums = this.numPendulums
         const defaultMass = this.defaultMass
 
-        const minMass = 0.1 * defaultMass
-        const maxMass = 2.0 * defaultMass
+        const minMass = 0.1
+        const maxMass = 2.0
 
         for (let i = 0; i < numPendulums; ++i) {
             output.push(mix(minMass, maxMass, Math.random()))
