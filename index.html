@@ -119,21 +119,6 @@
     </div>
 </div>
 
-<script type="module">
-    const canvas = document.getElementById("canvas")
-    canvas.width = 500
-    canvas.height = 500
-
-    // Testing Simulation
-
-    import { SimulationPrototype } from "./scripts/SimulationPrototype.js";
-
-    prototype = new SimulationPrototype()
-    prototype.present()
-
-    simulation = prototype.simulation
-</script>
-
 <div class="complete-container">
     <div class="options-container">
         <div id="failure-text-container"></div>
@@ -167,6 +152,22 @@
 
         <div class="options-spacer"></div>
 
+        <p class="options-text"><label for="combined-length-slider">Length (all pendulums combined)</label></p>
+        <p class="options-text" id="combined-length-text">1 meter</p>
+        <div id="combined-length-change-box">
+            <div class="integer-change-button-container-2">
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(-100)">-10</button>
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(-10)">-1</button>
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(-1)">-.1</button>
+                <input class="options-slider" type="range" min="-10000" max="20000" value="0" id="combined-length-slider">
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(1)">+.1</button>
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(10)">+1</button>
+                <button class="integer-change-button" onclick="changeCombinedLengthBy(100)">+10</button>
+            </div>
+        </div>
+
+        <div class="options-spacer"></div>
+
         <p class="options-text"><label for="angular-velocity-slider">Angular Velocity</label></p>
         <p class="options-text" id="angular-velocity-text">0 revolutions/second</p>
         <div class="integer-change-button-container">
@@ -175,20 +176,6 @@
             <input class="options-slider" type="range" min="-50" max="50" value="0" id="angular-velocity-slider">
             <button class="integer-change-button" onclick="changeAngularVelocityHzBy(1)">+.1</button>
             <button class="integer-change-button" onclick="changeAngularVelocityHzBy(5)">+.5</button>
-        </div>
-
-        <div class="options-spacer"></div>
-
-        <p class="options-text"><label for="combined-length-slider">Length (all pendulums combined)</label></p>
-        <p class="options-text" id="combined-length-text">1 meter</p>
-        <div class="integer-change-button-container-2">
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-100)">-10</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-10)">-1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(-1)">-.1</button>
-            <input class="options-slider" type="range" min="-10000" max="20000" value="0" id="combined-length-slider">
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(1)">+.1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(10)">+1</button>
-            <button class="integer-change-button" onclick="changeCombinedLengthBy(100)">+10</button>
         </div>
 
         <div class="options-spacer"></div>
@@ -206,8 +193,83 @@
         </div>
 
         <div class="options-spacer"></div>
+        <h2 class="options-header">Individual Pendulums</h2>
+
+        <p class="options-text"><label for="property-select">Choose a Property:</label></p>
+        <select class="options-select" id="property-select">
+            <option value="0">Length</option>
+            <option value="1">Mass</option>
+            <option value="2">Angle</option>
+            <option value="3">Angular Velocity</option>
+        </select>
+
+        <div id="length-options">
+            <p class="options-text"><label for="length-select">Options:</label></p>
+            <select class="options-select" id="length-select">
+                <option value="0">No Variation</option>
+                <option value="1">Random</option>
+                <option value="2">Long End</option>
+                <option value="3">Short End</option>
+            </select>
+
+            <div class="options-input-checkbox-text">
+                <input type="checkbox" id="preserve-combined-length-input" checked>
+                <div style="width: 5px"></div>
+                <label for="preserve-combined-length-input">Preserve Combined Length</label>
+            </div>
+
+            <div id="default-length-input-box" hidden>
+                <p class="options-text"><label for="default-length-input">Default Length (in meters):</label></p>
+                <input class="options-input-text" type="number" id="default-length-input">
+            </div>
+        </div>
+        <div id="mass-options" hidden>
+            <p class="options-text"><label for="mass-select">Options:</label></p>
+            <select class="options-select" id="mass-select">
+                <option value="0">No Variation</option>
+                <option value="1">Random</option>
+                <option value="2">Heavy End</option>
+                <option value="3">Light End</option>
+            </select>
+
+            <p class="options-text"><label for="default-mass-input">Default Mass (in kilograms):</label></p>
+            <input class="options-input-text" type="number" id="default-mass-input">
+        </div>
+        <div id="angle-options" hidden>
+            <p class="options-text"><label for="angle-select">Options:</label></p>
+            <select class="options-select" id="angle-select">
+                <option value="0">No Variation</option>
+                <option value="1">Random</option>
+                <option value="2">Staircase</option>
+                <option value="3">Spiral</option>
+            </select>
+        </div>
+        <div id="angular-velocity-options" hidden>
+            <p class="options-text"><label for="angular-velocity-select">Options:</label></p>
+            <select class="options-select" id="angular-velocity-select">
+                <option value="0">No Variation</option>
+                <option value="1">Random</option>
+            </select>
+        </div>
+
+        <div class="options-spacer"></div>
     </div>
 </div>
+
+<script type="module">
+    const canvas = document.getElementById("canvas")
+    canvas.width = 500
+    canvas.height = 500
+
+    // Testing Simulation
+
+    import { SimulationPrototype } from "./scripts/SimulationPrototype.js";
+
+    prototype = new SimulationPrototype()
+    prototype.present()
+
+    simulation = prototype.simulation
+</script>
 
 <script>
     // Number of pendulums
@@ -233,7 +295,7 @@
 
     function changeNumPendulumsBy(change) {
         const rawNumPendulums = prototype.numPendulums + change
-        const numPendulums = Math.min(100, Math.max(1, rawNumPendulums))
+        const numPendulums = Math.min(1000, Math.max(1, rawNumPendulums))
 
         if (numPendulums === prototype.numPendulums) {
             return
@@ -379,7 +441,7 @@
         }
 
         if (doingUnits) {
-            output = `${output} meter${output !== 1 ? "s" : ""}`
+            output = `${output} meter${output !== "1" ? "s" : ""}`
         }
 
         return output
@@ -395,7 +457,7 @@
     }
 
     function convertLengthLinToLog(linLength) {
-        const logLength = Math.log(linLength) * 10000
+        const logLength = Math.log10(linLength) * 10000
         return Math.round(logLength)
     }
 
@@ -484,6 +546,243 @@
         gravityText.innerHTML = getGravityString(gravity)
 
         prototype.gravitationalAcceleration = gravity
+        simulation = null
+        prototype.present()
+    }
+</script>
+
+<script>
+    // Individual Pendulum Customization
+
+    const propertySelect = document.getElementById("property-select")
+
+    const lengthOptions = document.getElementById("length-options")
+    const massOptions = document.getElementById("mass-options")
+    const angleOptions = document.getElementById("angle-options")
+    const angularVelocityOptions = document.getElementById("angular-velocity-options")
+
+    propertySelect.onchange = () => {
+        let hiddenValues = [true, true, true, true]
+
+        switch (propertySelect.value) {
+            case "0":
+                hiddenValues[0] = false
+                break
+            case "1":
+                hiddenValues[1] = false
+                break
+            case "2":
+                hiddenValues[2] = false
+                break
+            case "3":
+                hiddenValues[3] = false
+                break
+            default:
+                return
+        }
+
+        lengthOptions.hidden = hiddenValues[0]
+        massOptions.hidden = hiddenValues[1]
+        angleOptions.hidden = hiddenValues[2]
+        angularVelocityOptions.hidden = hiddenValues[3]
+    }
+
+    // Length
+
+    const lengthSelect = document.getElementById("length-select")
+    const changeCombinedLengthHandler = (newLength) => {
+        if (newLength === prototype.combinedPendulumLength) {
+            return
+        }
+
+        resetAllLabels()
+
+        const roundedLength = roundLinLength(newLength)
+        combinedLengthSlider.value = convertLengthLinToLog(roundedLength)
+        combinedLengthText.innerHTML = getLengthString(roundedLength)
+
+        prototype.combinedPendulumLength = newLength
+        simulation = null
+    }
+
+    lengthSelect.onchange = () => {
+        if (prototype.changeCombinedLengthHandler == null) {
+            prototype.changeCombinedLengthHandler = changeCombinedLengthHandler
+        }
+
+        switch (lengthSelect.value) {
+            case "0":
+                prototype.doingCustomLengths = false
+                break
+            case "1":
+                prototype.doingCustomLengths = true
+                prototype.customLengthType = "randomLengths"
+                break
+            case "2":
+                prototype.doingCustomLengths = true
+                prototype.customLengthType = "endIsLongerLengths"
+                break
+            case "3":
+                prototype.doingCustomLengths = true
+                prototype.customLengthType = "endIsShorterLengths"
+                break
+            default:
+                return
+        }
+
+        resetAllLabels()
+
+        simulation = null
+        prototype.present()
+    }
+
+    let didFirstUncheck = false
+
+    const preserveCombinedLengthInput = document.getElementById("preserve-combined-length-input")
+    const combinedLengthChangeBox = document.getElementById("combined-length-change-box")
+    const defaultLengthInputBox = document.getElementById("default-length-input-box")
+    const defaultLengthInput = document.getElementById("default-length-input")
+
+    preserveCombinedLengthInput.onchange = () => {
+        if (prototype.changeCombinedLengthHandler == null) {
+            prototype.changeCombinedLengthHandler = changeCombinedLengthHandler
+        }
+
+        const doingLengthNormalization = preserveCombinedLengthInput.checked
+        combinedLengthChangeBox.hidden = !doingLengthNormalization
+        defaultLengthInputBox.hidden = doingLengthNormalization
+
+        if (!didFirstUncheck && !doingLengthNormalization) {
+            didFirstUncheck = true
+
+            const defaultLength = Number((prototype.combinedPendulumLength / prototype.numPendulums).toFixed(4))
+            prototype.defaultLength = defaultLength
+            defaultLengthInput.value = defaultLength
+        }
+
+        resetAllLabels()
+
+        prototype.doingLengthNormalization = doingLengthNormalization
+        simulation = null
+        prototype.present()
+    }
+
+    defaultLengthInput.onchange = () => {
+        if (prototype.changeCombinedLengthHandler == null) {
+            prototype.changeCombinedLengthHandler = changeCombinedLengthHandler
+        }
+
+        resetAllLabels()
+
+        let retrievedValue = defaultLengthInput.value
+        if (retrievedValue === "") {
+            defaultLengthInput.value = 1
+            retrievedValue = 1
+        }
+
+        prototype.defaultLength = Number(retrievedValue)
+        simulation = null
+        prototype.present()
+    }
+
+    // Mass
+
+    const massSelect = document.getElementById("mass-select")
+
+    massSelect.onchange = () => {
+        switch (massSelect.value) {
+            case "0":
+                prototype.doingCustomMasses = false
+                break
+            case "1":
+                prototype.doingCustomMasses = true
+                prototype.customMassType = "randomMasses"
+                break
+            case "2":
+                prototype.doingCustomMasses = true
+                prototype.customMassType = "endIsHeavierMasses"
+                break
+            case "3":
+                prototype.doingCustomMasses = true
+                prototype.customMassType = "endIsLighterMasses"
+                break
+            default:
+                return
+        }
+
+        resetAllLabels()
+
+        simulation = null
+        prototype.present()
+    }
+
+    const defaultMassInput = document.getElementById("default-mass-input")
+    defaultMassInput.value = 1
+
+    defaultMassInput.onchange = () => {
+        resetAllLabels()
+
+        let retrievedValue = defaultMassInput.value
+        if (retrievedValue === "") {
+            defaultMassInput.value = 1
+            retrievedValue = 1
+        }
+
+        prototype.defaultMass = Number(retrievedValue)
+        simulation = null
+        prototype.present()
+    }
+
+    // Angle
+
+    const angleSelect = document.getElementById("angle-select")
+
+    angleSelect.onchange = () => {
+        switch (angleSelect.value) {
+            case "0":
+                prototype.doingCustomInitialAnglePercents = false
+                break
+            case "1":
+                prototype.doingCustomInitialAnglePercents = true
+                prototype.customAngleType = "randomAnglePercents"
+                break
+            case "2":
+                prototype.doingCustomInitialAnglePercents = true
+                prototype.customAngleType = "staircaseAnglePercents"
+                break
+            case "3":
+                prototype.doingCustomInitialAnglePercents = true
+                prototype.customAngleType = "spiralAnglePercents"
+                break
+            default:
+                return
+        }
+
+        resetAllLabels()
+
+        simulation = null
+        prototype.present()
+    }
+
+    // Angular Velocity
+
+    const angularVelocitySelect = document.getElementById("angular-velocity-select")
+
+    angularVelocitySelect.onchange = () => {
+        switch (angularVelocitySelect.value) {
+            case "0":
+                prototype.doingCustomInitialAngularVelocities = false
+                break
+            case "1":
+                prototype.doingCustomInitialAngularVelocities = true
+                prototype.customAngularVelocityType = "randomAngularVelocities"
+                break
+            default:
+                return
+        }
+
+        resetAllLabels()
+
         simulation = null
         prototype.present()
     }
