@@ -284,6 +284,12 @@ export class StateEquations {
         return { angularVelocities: outputAngularVelocities, forces: outputForces }
     }
 
+    // The `matrix` is a system of linear of equations representing angular velocities
+    // The derivative of each value in that matrix is used to calculate forces
+
+    // Solving the `matrix` is has O(n^3) algorithmic complexity with respect to the number of pendulums
+    // Solving the `matrix derivative` has O(n^4) algorithmic complexity
+
     solveOnlyMatrix(angles, momenta) {
         const numPendulums = this.numPendulums
         const firstLayer = this.transientMatrixLayers[1]
@@ -432,6 +438,17 @@ export class StateEquations {
             firstLayer[i_row + numPendulums] = momenta[i]
         }
 
+        // 3 characters before `Offset` means a variable represents a 3D coordinate
+        // 4 characters before `Offset` means a variable represents a 4D coordinate
+
+        // values in the matrix are addressed by a 3D coordinate
+        // values in the matrix derivative are addressed by a 4D coordinate
+
+        // an underscore means that a coordinate is set to zero
+        // for example, `_abOffset` means the first coordinate is zero,
+        // the second coordinate is the value of `a`,
+        // and the third coordinate is the value of `b`
+
         const transientMatrixLayers = this.transientMatrixLayers
         const transientMatrixDerivativeLayers = this.transientMatrixDerivativeLayers
         const transientPartialDerivatives = this.transientPartialDerivatives
@@ -456,6 +473,10 @@ export class StateEquations {
                 transientPartialDerivatives[h] = inputDerivativeLayer[hiiiOffset]
                 hiiiOffset += layerSize
             }
+
+            // In variables declared below, a variable name ending with `Value` means it came from
+            // the matrix, while a variable name ending with `Derivative` means it came from
+            // the matrix derivative.
 
             const iiiValue = inputLayer[iiiOffset]
 
