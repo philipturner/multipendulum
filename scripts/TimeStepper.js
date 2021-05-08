@@ -125,15 +125,15 @@ export class TimeStepper {
             const numPendulums = this.numPendulums
             let modulusOperand
 
-            if (numPendulums <= 50) {
+            if (numPendulums <= 25) {
                 modulusOperand = 1.0 / 32
-            } else if (numPendulums <= 100) {
+            } else if (numPendulums <= 50) {
                 modulusOperand = 1.0 / 16
-            } else if (numPendulums <= 200) {
+            } else if (numPendulums <= 100) {
                 modulusOperand = 1.0 / 8
-            } else if (numPendulums <= 400) {
+            } else if (numPendulums <= 200) {
                 modulusOperand = 1.0 / 4
-            } else if (numPendulums <= 800) {
+            } else if (numPendulums <= 400) {
                 modulusOperand = 1.0 / 2
             } else {
                 modulusOperand = 1.0
