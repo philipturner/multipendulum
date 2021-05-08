@@ -132,6 +132,33 @@ body {
     width: 200px;
 }
 
+.options-select {
+    margin: 15px 10px;
+    border: 0;
+    font-size: 18px;
+    font-family: Inter, sans-serif;
+}
+
+.options-input-text {
+    margin: 15px 10px;
+    border: 0;
+    font-size: 18px;
+    font-family: Inter, sans-serif;
+    text-align: center;
+}
+
+.options-input-checkbox-text {
+    margin: 10px 10px 20px;
+    border: 0;
+    font-size: 18px;
+    font-family: Inter, sans-serif;
+    text-align: center;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    justify-content: center;
+}
+
 .options-spacer {
     margin: 0;
     padding: 0;
@@ -225,6 +252,24 @@ body {
     .options-slider {
         margin: 10px 0.90909090909091vw;
         width: 36.36363636364vw;
+    }
+
+    .options-select {
+        margin: 15px 0.90909090909091vw;
+        font-size: 3.2727272727273vw;
+    }
+
+    .options-input-text {
+        margin: 15px 0.90909090909091vw;
+        font-size: 3.2727272727273vw;
+    }
+
+    .options-input-checkbox-text {
+        margin: 10px 0.90909090909091vw 20px;
+        border: 0;
+        font-size: 3.2727272727273vw;
+        font-family: Inter, sans-serif;
+        text-align: center;
     }
 
     .options-spacer {
