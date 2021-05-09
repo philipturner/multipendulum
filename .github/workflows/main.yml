@@ -1,6 +1,6 @@
 on:
   schedule:
-     - cron: "55 23 * * SUN"
+     - cron: "0 18 * * SUN"
 
 #Store traffic data for more than 14 days
 
