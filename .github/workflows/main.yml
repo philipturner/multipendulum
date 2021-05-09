@@ -22,5 +22,5 @@ jobs:
         source_file: './traffic/'
         destination_repo: ${{ secrets.TRAFFIC_DESTINATION }}
         destination_folder: ${{ secrets.MULTIPENDULUM_TRAFFIC_FOLDER }}
-        user_email: _
-        user_name: _
+        user_email: ${{ secrets.EMAIL }}
+        user_name: ${{ secrets.USERNAME }}
