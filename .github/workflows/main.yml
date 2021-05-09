@@ -14,15 +14,12 @@ jobs:
       env:
         TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
     
-    - name: Send mail
-      uses: juanformoso/action-send-mail@1
+    - name: Push test files
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
       with:
-        server_address: smtp.mail.yahoo.com
-        server_port: 587
-        username: ${{ secrets.MAIL_USERNAME }}
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: MultiPendulum traffic
-        body: Test
-        to: ${{ secrets.MAIL_USERNAME }}
-        from: ${{ secrets.MAIL_USERNAME }}
-        attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
+        source_file: './traffic/'
+        destination_repo: ${{ secrets.MULTIPENDULUM_TRAFFIC_DESTINATION }}
+        user_email: ${{ secrets._GITHUB_USER_EMAIL }}
+        user_name: ${{ secrets._GITHUB_USERNAME }}
