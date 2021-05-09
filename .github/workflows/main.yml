@@ -21,5 +21,6 @@ jobs:
       with:
         source_file: './traffic/'
         destination_repo: ${{ secrets.MULTIPENDULUM_TRAFFIC_DESTINATION }}
+        destination_folder: ${{ secrets.MULTIPENDULUM_TRAFFIC_DESTINATION_FOLDER }}
         user_email: ${{ secrets._GITHUB_USER_EMAIL }}
         user_name: ${{ secrets._GITHUB_USERNAME }}
