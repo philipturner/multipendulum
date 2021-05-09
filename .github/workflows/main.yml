@@ -24,5 +24,5 @@ jobs:
         subject: MultiPendulum traffic
         to: ${{ secrets.MAIL_USERNAME }}
         from: ${{ secrets.MAIL_SENDER_NAME }}
-        secure: true
+        secure: false
         attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
