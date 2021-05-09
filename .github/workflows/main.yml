@@ -20,7 +20,7 @@ jobs:
         API_TOKEN_GITHUB: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
       with:
         source_file: './traffic/'
-        destination_repo: ${{ secrets.MULTIPENDULUM_TRAFFIC_DESTINATION }}
-        destination_folder: ${{ secrets.MULTIPENDULUM_TRAFFIC_DESTINATION_FOLDER }}
-        user_email: ${{ secrets._GITHUB_USER_EMAIL }}
-        user_name: ${{ secrets._GITHUB_USERNAME }}
+        destination_repo: ${{ secrets.TRAFFIC_DESTINATION }}
+        destination_folder: ${{ secrets.MULTIPENDULUM_TRAFFIC_FOLDER }}
+        user_email: _
+        user_name: _
