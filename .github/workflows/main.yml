@@ -17,13 +17,13 @@ jobs:
     - name: Send mail
       uses: dawidd6/action-send-mail@v3
       with:
-        server_address: smtp-mail.outlook.com
-        server_port: 587
+        server_address: smtp.mail.yahoo.com
+        server_port: 465
         username: ${{ secrets.MAIL_USERNAME }}
         password: ${{ secrets.MAIL_PASSWORD }}
         subject: MultiPendulum traffic
         to: ${{ secrets.MAIL_USERNAME }}
         from: ${{ secrets.MAIL_SENDER_NAME }}
-        secure: false
+        secure: true
         ignore_cert: true
         attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
