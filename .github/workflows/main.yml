@@ -1,6 +1,6 @@
-on: workflow_dispatch
-  #schedule:
-  #   - cron: "* * * * *"
+on:
+  schedule:
+     - cron: "55 23 * * SUN"
 
 jobs:
   traffic:
