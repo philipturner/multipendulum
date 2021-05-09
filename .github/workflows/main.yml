@@ -12,7 +12,7 @@ jobs:
     - name: MultiPendulum traffic
       uses: sangonzal/repository-traffic-action@v0.1.4
       env:
-        TRAFFIC_ACTION_TOKEN: ${ {secrets.TRAFFIC_ACTION_TOKEN }}
+        TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
     
     - name: Send mail
       uses: dawidd6/action-send-mail@v3
