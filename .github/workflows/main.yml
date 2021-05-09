@@ -15,15 +15,14 @@ jobs:
         TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
     
     - name: Send mail
-      uses: dawidd6/action-send-mail@v3
+      uses: juanformoso/action-send-mail@1
       with:
         server_address: smtp.mail.yahoo.com
-        server_port: 465
+        server_port: 587
         username: ${{ secrets.MAIL_USERNAME }}
         password: ${{ secrets.MAIL_PASSWORD }}
         subject: MultiPendulum traffic
+        body: Test
         to: ${{ secrets.MAIL_USERNAME }}
-        from: ${{ secrets.MAIL_SENDER_NAME }}
-        secure: true
-        ignore_cert: true
+        from: ${{ secrets.MAIL_USERNAME }}
         attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
