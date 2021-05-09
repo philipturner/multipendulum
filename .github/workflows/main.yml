@@ -1,6 +1,6 @@
-on: workflow_dispatch
-  #schedule:
-  #   - cron: "* * * * *"
+on:
+  schedule:
+     - cron: "55 23 * * SUN"
 
 jobs:
   traffic:
@@ -14,15 +14,13 @@ jobs:
       env:
         TRAFFIC_ACTION_TOKEN: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
     
-    - name: Send mail
-      uses: dawidd6/action-send-mail@v3
+    - name: Push test files
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.TRAFFIC_ACTION_TOKEN }}
       with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.MAIL_USERNAME }}
-        password: ${{ secrets.MAIL_PASSWORD }}
-        subject: MultiPendulum traffic
-        to: ${{ secrets.MAIL_USERNAME }}
-        from: ${{ secrets.MAIL_SENDER_NAME }}
-        secure: true
-        attachments: ./traffic/views.csv,./traffic/clones.csv,./traffic/plots.png
+        source_file: './traffic/'
+        destination_repo: ${{ secrets.TRAFFIC_DESTINATION }}
+        destination_folder: ${{ secrets.MULTIPENDULUM_TRAFFIC_FOLDER }}
+        user_email: ${{ secrets.EMAIL }}
+        user_name: ${{ secrets.USERNAME }}
