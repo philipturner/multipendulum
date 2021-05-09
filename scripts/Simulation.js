@@ -84,7 +84,6 @@ export class Simulation {
 
         const selfRef = this
 
-        // Remove braces around the arrow function in this line
         this.replayInterval = setInterval(() => { selfRef.update() }, 1000.0 / 60)
 
         this.executeSimulationStep = () => {
