@@ -17,7 +17,7 @@ jobs:
     - name: Send mail
       uses: dawidd6/action-send-mail@v3
       with:
-        server_address: stmp-mail.outlook.com
+        server_address: smtp-mail.outlook.com
         server_port: 587
         username: ${{ secrets.MAIL_USERNAME }}
         password: ${{ secrets.MAIL_PASSWORD }}
