@@ -205,6 +205,8 @@
         <div class="options-spacer"></div>
         <h2 class="options-header">Individual Pendulums</h2>
 
+        <div class="options-small-spacer"></div>
+
         <p class="options-text"><label for="property-select">Choose a Property:</label></p>
         <select class="options-select" id="property-select">
             <option value="0">Length</option>
@@ -213,6 +215,8 @@
             <option value="3">Angular Velocity</option>
         </select>
 
+        <div class="options-small-spacer"></div>
+
         <div id="length-options">
             <p class="options-text"><label for="length-select">Options:</label></p>
             <select class="options-select" id="length-select">
@@ -220,6 +224,7 @@
                 <option value="1">Random</option>
                 <option value="2">Long End</option>
                 <option value="3">Short End</option>
+                <option value="4">Custom</option>
             </select>
 
             <div class="options-input-checkbox-text">
@@ -229,6 +234,7 @@
             </div>
 
             <div id="default-length-input-box" hidden>
+                <div class="options-small-spacer"></div>
                 <p class="options-text"><label for="default-length-input">Default Length (in meters):</label></p>
                 <input class="options-input-text" type="number" id="default-length-input">
             </div>
@@ -240,8 +246,10 @@
                 <option value="1">Random</option>
                 <option value="2">Heavy End</option>
                 <option value="3">Light End</option>
+                <option value="4">Custom</option>
             </select>
 
+            <div class="options-small-spacer"></div>
             <p class="options-text"><label for="default-mass-input">Default Mass (in kilograms):</label></p>
             <input class="options-input-text" type="number" id="default-mass-input">
         </div>
@@ -252,6 +260,7 @@
                 <option value="1">Random</option>
                 <option value="2">Staircase</option>
                 <option value="3">Spiral</option>
+                <option value="4">Custom</option>
             </select>
         </div>
         <div id="angular-velocity-options" hidden>
@@ -259,9 +268,15 @@
             <select class="options-select" id="angular-velocity-select">
                 <option value="0">No Variation</option>
                 <option value="1">Random</option>
+                <option value="2">Custom</option>
             </select>
         </div>
 
+        <div id="custom-property-box" hidden>
+            <button id="set-default-button" class="control-button" onclick="setAllToDefault()">
+                Set All to Default
+            </button>
+        </div>
         <div class="options-spacer"></div>
     </div>
 </div>
@@ -277,6 +292,12 @@
 
     prototype = new SimulationPrototype()
     prototype.present()
+    prototype.resetSimulationHandler = () => {
+        resetAllLabels()
+
+        simulation = null
+        prototype.present()
+    }
 
     simulation = prototype.simulation
 </script>
@@ -415,11 +436,10 @@
     }
 
     function changeAngularVelocityHzBy(change) {
-        let rawAngularVelocityHz = prototype.defaultAngularVelocity / (2 * Math.PI)
-        rawAngularVelocityHz = Math.round(rawAngularVelocityHz * 10) + change
-        rawAngularVelocityHz /= 10
+        let angularVelocityHz = prototype.defaultAngularVelocity / (2 * Math.PI)
+        angularVelocityHz = Math.round(angularVelocityHz * 10) + change
+        angularVelocityHz /= 10
 
-        const angularVelocityHz = Math.min(5, Math.max(-5, rawAngularVelocityHz))
         const angularVelocity = angularVelocityHz * (2 * Math.PI)
 
         if (angularVelocity === prototype.defaultAngularVelocity) {
@@ -565,6 +585,7 @@
     // Individual Pendulum Customization
 
     const propertySelect = document.getElementById("property-select")
+    const customPropertyBox = document.getElementById("custom-property-box")
 
     const lengthOptions = document.getElementById("length-options")
     const massOptions = document.getElementById("mass-options")
@@ -574,27 +595,17 @@
     propertySelect.onchange = () => {
         let hiddenValues = [true, true, true, true]
 
-        switch (propertySelect.value) {
-            case "0":
-                hiddenValues[0] = false
-                break
-            case "1":
-                hiddenValues[1] = false
-                break
-            case "2":
-                hiddenValues[2] = false
-                break
-            case "3":
-                hiddenValues[3] = false
-                break
-            default:
-                return
-        }
+        const propertyID = Number(propertySelect.value)
+
+        hiddenValues[propertyID] = false
+        prototype.setLoadedProperty(propertyID)
 
         lengthOptions.hidden = hiddenValues[0]
         massOptions.hidden = hiddenValues[1]
         angleOptions.hidden = hiddenValues[2]
         angularVelocityOptions.hidden = hiddenValues[3]
+
+        ensureCustomPropertyBox_correctlyPresented(propertyID)
     }
 
     // Length
@@ -615,6 +626,11 @@
         simulation = null
     }
 
+    const preserveCombinedLengthInput = document.getElementById("preserve-combined-length-input")
+    const combinedLengthChangeBox = document.getElementById("combined-length-change-box")
+    const defaultLengthInputBox = document.getElementById("default-length-input-box")
+    const defaultLengthInput = document.getElementById("default-length-input")
+
     lengthSelect.onchange = () => {
         if (prototype.changeCombinedLengthHandler == null) {
             prototype.changeCombinedLengthHandler = changeCombinedLengthHandler
@@ -623,35 +639,54 @@
         switch (lengthSelect.value) {
             case "0":
                 prototype.doingCustomLengths = false
+                defaultLengthInputBox.hidden = preserveCombinedLengthInput.checked
+
+                customPropertyBox.hidden = true
                 break
             case "1":
                 prototype.doingCustomLengths = true
                 prototype.customLengthType = "randomLengths"
+                defaultLengthInputBox.hidden = preserveCombinedLengthInput.checked
+
+                customPropertyBox.hidden = true
                 break
             case "2":
                 prototype.doingCustomLengths = true
                 prototype.customLengthType = "endIsLongerLengths"
+                defaultLengthInputBox.hidden = preserveCombinedLengthInput.checked
+
+                customPropertyBox.hidden = true
                 break
             case "3":
                 prototype.doingCustomLengths = true
                 prototype.customLengthType = "endIsShorterLengths"
+                defaultLengthInputBox.hidden = preserveCombinedLengthInput.checked
+
+                customPropertyBox.hidden = true
+                break
+            case "4":
+                prototype.doingCustomLengths = true
+                prototype.customLengthType = "customLengths"
+                prototype.ensureCustomLengthsInitialized()
+                defaultLengthInputBox.hidden = false
+
+                customPropertyBox.hidden = false
                 break
             default:
                 return
         }
 
+        defaultLengthInput.value = prototype.defaultLength
+
         resetAllLabels()
 
         simulation = null
         prototype.present()
+
+
     }
 
     let didFirstUncheck = false
-
-    const preserveCombinedLengthInput = document.getElementById("preserve-combined-length-input")
-    const combinedLengthChangeBox = document.getElementById("combined-length-change-box")
-    const defaultLengthInputBox = document.getElementById("default-length-input-box")
-    const defaultLengthInput = document.getElementById("default-length-input")
 
     preserveCombinedLengthInput.onchange = () => {
         if (prototype.changeCombinedLengthHandler == null) {
@@ -660,14 +695,21 @@
 
         const doingLengthNormalization = preserveCombinedLengthInput.checked
         combinedLengthChangeBox.hidden = !doingLengthNormalization
-        defaultLengthInputBox.hidden = doingLengthNormalization
+
+        let shouldHideDefaultLengthInput = doingLengthNormalization
+        shouldHideDefaultLengthInput &&= !(prototype.customLengthType === "customLengths")
+        defaultLengthInputBox.hidden = shouldHideDefaultLengthInput
+        defaultLengthInput.value = prototype.defaultLength
 
         if (!didFirstUncheck && !doingLengthNormalization) {
             didFirstUncheck = true
 
-            const defaultLength = Number((prototype.combinedPendulumLength / prototype.numPendulums).toFixed(4))
-            prototype.defaultLength = defaultLength
+            let defaultLength = prototype.combinedPendulumLength / prototype.numPendulums
+            defaultLength = Number(defaultLength.toFixed(4))
+
             defaultLengthInput.value = defaultLength
+            prototype.defaultLength = defaultLength
+            prototype.didUncheckLengthNormalization = true
         }
 
         resetAllLabels()
@@ -703,18 +745,33 @@
         switch (massSelect.value) {
             case "0":
                 prototype.doingCustomMasses = false
+
+                customPropertyBox.hidden = true
                 break
             case "1":
                 prototype.doingCustomMasses = true
                 prototype.customMassType = "randomMasses"
+
+                customPropertyBox.hidden = true
                 break
             case "2":
                 prototype.doingCustomMasses = true
                 prototype.customMassType = "endIsHeavierMasses"
+
+                customPropertyBox.hidden = true
                 break
             case "3":
                 prototype.doingCustomMasses = true
                 prototype.customMassType = "endIsLighterMasses"
+
+                customPropertyBox.hidden = true
+                break
+            case "4":
+                prototype.doingCustomMasses = true
+                prototype.customMassType = "customMasses"
+                prototype.ensureCustomMassesInitialized()
+
+                customPropertyBox.hidden = false
                 break
             default:
                 return
@@ -751,18 +808,33 @@
         switch (angleSelect.value) {
             case "0":
                 prototype.doingCustomInitialAnglePercents = false
+
+                customPropertyBox.hidden = true
                 break
             case "1":
                 prototype.doingCustomInitialAnglePercents = true
                 prototype.customAngleType = "randomAnglePercents"
+
+                customPropertyBox.hidden = true
                 break
             case "2":
                 prototype.doingCustomInitialAnglePercents = true
                 prototype.customAngleType = "staircaseAnglePercents"
+
+                customPropertyBox.hidden = true
                 break
             case "3":
                 prototype.doingCustomInitialAnglePercents = true
                 prototype.customAngleType = "spiralAnglePercents"
+
+                customPropertyBox.hidden = true
+                break
+            case "4":
+                prototype.doingCustomInitialAnglePercents = true
+                prototype.customAngleType = "customAnglePercents"
+                prototype.ensureCustomAnglePercentsInitialized()
+
+                customPropertyBox.hidden = false
                 break
             default:
                 return
@@ -782,10 +854,21 @@
         switch (angularVelocitySelect.value) {
             case "0":
                 prototype.doingCustomInitialAngularVelocities = false
+
+                customPropertyBox.hidden = true
                 break
             case "1":
                 prototype.doingCustomInitialAngularVelocities = true
                 prototype.customAngularVelocityType = "randomAngularVelocities"
+
+                customPropertyBox.hidden = true
+                break
+            case "2":
+                prototype.doingCustomInitialAngularVelocities = true
+                prototype.customAngularVelocityType = "customAngularVelocities"
+                prototype.ensureCustomAngularVelocitiesInitialized()
+
+                customPropertyBox.hidden = false
                 break
             default:
                 return
@@ -795,6 +878,42 @@
 
         simulation = null
         prototype.present()
+    }
+
+    function setAllToDefault() {
+        prototype.setAllToDefault()
+
+        if (prototype.loadedProperty === 0) {
+            let linLength = prototype.combinedPendulumLength
+            linLength = Math.round(linLength * 10) / 10
+
+            combinedLengthSlider.value = convertLengthLinToLog(linLength)
+            combinedLengthText.innerHTML = getLengthString(linLength)
+
+        }
+    }
+
+    function ensureCustomPropertyBox_correctlyPresented(propertyID) {
+        let hidden
+
+        switch (propertyID) {
+            case 0:
+                hidden = prototype.customLengthType !== "customLengths"
+                break
+            case 1:
+                hidden = prototype.customMassType !== "customMasses"
+                break
+            case 2:
+                hidden = prototype.customAngleType !== "customAnglePercents"
+                break
+            case 3:
+                hidden = prototype.customAngularVelocityType !== "customAngularVelocities"
+                break
+            default:
+                return
+        }
+
+        customPropertyBox.hidden = hidden
     }
 </script>
 
