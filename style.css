@@ -98,6 +98,11 @@ body {
     padding: 5px;
 }
 
+#set-default-button {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
 .options-container {
     display: flex;
     flex-direction: column;
@@ -164,6 +169,14 @@ body {
     padding: 0;
     border: 0;
     height: 30px;
+    width: 500px;
+}
+
+.options-small-spacer {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    height: 15px;
     width: 500px;
 }
 
@@ -273,6 +286,10 @@ body {
     }
 
     .options-spacer {
+        width: 100vw;
+    }
+
+    .options-small-spacer {
         width: 100vw;
     }
 
