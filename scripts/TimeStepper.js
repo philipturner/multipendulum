@@ -63,22 +63,22 @@ export class TimeStepper {
     ]
 
     weights = [
-           35 / 384,
-              0,
-          500 / 1113,
-          125 / 192,
+        35 / 384,
+        0,
+        500 / 1113,
+        125 / 192,
         -2187 / 6784,
-           11 / 84
+        11 / 84
     ]
 
     altWeights = [
-          5197 / 57600,
-               0,
-          7571 / 16695,
-           393 / 640,
+        5197 / 57600,
+        0,
+        7571 / 16695,
+        393 / 640,
         -92097 / 339200,
-           187 / 2100,
-             1 / 40
+        187 / 2100,
+        1 / 40
     ]
 
     numPendulums
@@ -129,15 +129,19 @@ export class TimeStepper {
             const numPendulums = this.numPendulums
             let modulusOperand
 
-            if (numPendulums <= 25) {
+            if (numPendulums <= 4) {
+                modulusOperand = 1.0 / 128
+            } else if (numPendulums <= 8) {
+                modulusOperand = 1.0 / 64
+            } else if (numPendulums <= 16) {
                 modulusOperand = 1.0 / 32
-            } else if (numPendulums <= 50) {
+            } else if (numPendulums <= 32) {
                 modulusOperand = 1.0 / 16
-            } else if (numPendulums <= 100) {
+            } else if (numPendulums <= 64) {
                 modulusOperand = 1.0 / 8
-            } else if (numPendulums <= 200) {
+            } else if (numPendulums <= 128) {
                 modulusOperand = 1.0 / 4
-            } else if (numPendulums <= 400) {
+            } else if (numPendulums <= 256) {
                 modulusOperand = 1.0 / 2
             } else {
                 modulusOperand = 1.0
