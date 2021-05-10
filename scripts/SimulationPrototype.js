@@ -365,8 +365,8 @@ export class SimulationPrototype {
         const numPendulums = this.numPendulums
         const defaultLength = this.defaultLength
 
-        const minLength = 0.1
-        const maxLength = 2.0
+        const minLength = 0.1 * defaultLength
+        const maxLength = 2.0 * defaultLength
 
         for (let i = 0; i < numPendulums; ++i) {
             output.push(mix(minLength, maxLength, Math.random()))
@@ -428,8 +428,8 @@ export class SimulationPrototype {
         const numPendulums = this.numPendulums
         const defaultMass = this.defaultMass
 
-        const minMass = 0.1
-        const maxMass = 2.0
+        const minMass = 0.1 * defaultMass
+        const maxMass = 2.0 * defaultMass
 
         for (let i = 0; i < numPendulums; ++i) {
             output.push(mix(minMass, maxMass, Math.random()))
