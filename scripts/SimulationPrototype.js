@@ -5,23 +5,7 @@ function mix(min, max, t) {
 }
 
 export class SimulationPrototype {
-    _numPendulums
-    get numPendulums() { return this._numPendulums }
-    set numPendulums(rawNewValue) {
-        const newValue = Math.min(1000, Math.max(1, rawNewValue))
-        const previousNumPendulums = this.numPendulums
-
-        if (previousNumPendulums < newValue) {
-            for (let i = previousNumPendulums; i < newValue; ++i) {
-                this._customLengthArray.push(this.defaultLength)
-                this._customMassArray.push(this.defaultMass)
-                this._customAnglePercentArray.push(this.defaultAnglePercent)
-                this._customAngularVelocityArray.push(this.defaultAngularVelocity)
-            }
-        }
-
-        this._numPendulums = newValue
-    }
+    _numPendulums = 0
 
     combinedPendulumLength
     gravitationalAcceleration
@@ -46,6 +30,13 @@ export class SimulationPrototype {
     _customAnglePercentArray = []
     _customAngularVelocityArray = []
 
+    _didInitialize_customLengths = false
+    _didInitialize_customMasses = false
+    _didInitialize_customAnglePercents = false
+    _didInitialize_customAngularVelocities = false
+
+    didUncheckLengthNormalization = false
+
     get customLengthArray() { return this._customLengthArray }
     get customMassArray() { return this._customMassArray }
     get customAnglePercentArray() { return this._customAnglePercentArray }
@@ -58,8 +49,11 @@ export class SimulationPrototype {
 
     doingLengthNormalization
     changeCombinedLengthHandler
+    resetSimulationHandler
 
     canvas
+    hiddenPropertyContainerArray
+    loadedProperty
 
     constructor() {
         this.combinedPendulumLength = 1
@@ -80,16 +74,23 @@ export class SimulationPrototype {
         this.defaultAnglePercent = 75
         this.defaultAngularVelocity = 0
 
-        this.numPendulums = 3
-
         this.doingLengthNormalization = true
 
         this.canvas = document.getElementById("canvas")
+        this.hiddenPropertyContainerArray = []
+        this.loadedProperty = 0
+
+        // 0: length
+        // 1: mass
+        // 2: angle
+        // 3: angularVelocity
+
+        this.numPendulums = 3
     }
 
     get simulation() {
         return new Simulation({
-            numPendulums: this.numPendulums,
+            numPendulums: this._numPendulums,
             gravitationalAcceleration: this.gravitationalAcceleration
         },
         {
@@ -98,6 +99,99 @@ export class SimulationPrototype {
             initialAngles: this._getInitialAnglesInRadians({ usingStoredRandom: true }),
             initialAngularVelocities: this._getInitialAngularVelocities({ usingStoredRandom: true })
         })
+    }
+
+    get numPendulums() { return this._numPendulums }
+    set numPendulums(rawNewValue) {
+        const newValue = Math.min(1000, Math.max(1, rawNewValue))
+        const previousNumPendulums = this.numPendulums
+
+        if (previousNumPendulums < newValue) {
+            const customPropertyBox = document.getElementById("custom-property-box")
+            const numPropertyContainers = this.hiddenPropertyContainerArray.length
+
+            for (let i = previousNumPendulums; i < newValue; ++i) {
+                this._customLengthArray.push(this.defaultLength)
+                this._customMassArray.push(this.defaultMass)
+                this._customAnglePercentArray.push(this.defaultAnglePercent)
+                this._customAngularVelocityArray.push(this.defaultAngularVelocity)
+
+                if (i >= numPropertyContainers) {
+                    const i_plus_1 = i + 1
+
+                    const container_id = `pendulum-${i_plus_1}-container`
+                    const input_id = `pendulum-${i_plus_1}-input`
+
+                    const newElementStr = `
+                    <div id="${container_id}">
+                        <p class="options-text"><label for="${input_id}">Pendulum ${i_plus_1}</label></p>
+                        <input class="options-input-text" type="number" id="${input_id}">
+                    </div>`
+
+                    customPropertyBox.innerHTML += newElementStr
+
+                    this.hiddenPropertyContainerArray.push(false)
+                } else {
+                    if (this.hiddenPropertyContainerArray[i]) {
+                        this.hiddenPropertyContainerArray[i] = false
+
+                        document.getElementById(`pendulum-${i + 1}-container`).hidden = false
+                    }
+                }
+            }
+
+            let propertyArray
+
+            switch (this.loadedProperty) {
+                case 0:
+                    propertyArray = this._customLengthArray
+                    break
+                case 1:
+                    propertyArray = this._customMassArray
+                    break
+                case 2:
+                    propertyArray = this._customAnglePercentArray.map((a) => a * 1.8)
+                    break
+                case 3:
+                    propertyArray = this._customAngularVelocityArray.map((a) => a / (2 * Math.PI))
+                    break
+                default:
+                    throw "Incorrect loaded property ID"
+            }
+
+            const selfRef = this
+
+            for (let i = 0; i < newValue; ++i) {
+                const input_id = `pendulum-${i + 1}-input`
+                const inputElement = document.getElementById(input_id)
+
+                inputElement.value = propertyArray[i]
+
+                inputElement.onchange = () => {
+                    selfRef.setPropertyElement(i, inputElement, Number(inputElement.value))
+                }
+            }
+        }
+
+        for (let i = 0; i < newValue; ++i) {
+            if (this.hiddenPropertyContainerArray[i]) {
+                this.hiddenPropertyContainerArray[i] = false
+
+                document.getElementById(`pendulum-${i + 1}-container`).hidden = false
+            }
+        }
+
+        const numPropertyContainers = this.hiddenPropertyContainerArray.length
+
+        for (let i = newValue; i < numPropertyContainers; ++i) {
+            if (!this.hiddenPropertyContainerArray[i]) {
+                this.hiddenPropertyContainerArray[i] = true
+
+                document.getElementById(`pendulum-${i + 1}-container`).hidden = true
+            }
+        }
+
+        this._numPendulums = newValue
     }
 
     present() {
@@ -188,6 +282,213 @@ export class SimulationPrototype {
         }
     }
 
+    setLoadedProperty(propertyID, { bypass } = { bypass: false }) {
+        if (this.loadedProperty === propertyID && !bypass) {
+            return
+        } else {
+            this.loadedProperty = propertyID
+        }
+
+        let propertyArray
+
+        switch (propertyID) {
+            case 0:
+                propertyArray = this._customLengthArray
+                break
+            case 1:
+                propertyArray = this._customMassArray
+                break
+            case 2:
+                propertyArray = this._customAnglePercentArray.map((a) => a * 1.8)
+                break
+            case 3:
+                propertyArray = this._customAngularVelocityArray.map((a) => a / (2 * Math.PI))
+                break
+            default:
+                throw "Incorrect loaded property ID"
+        }
+
+        const propertyElementCount = this.hiddenPropertyContainerArray.length
+
+        for (let i = 0; i < propertyElementCount; ++i) {
+            const element = document.getElementById(`pendulum-${i + 1}-input`)
+
+            element.value = propertyArray[i]
+        }
+    }
+
+    setAllToDefault() {
+        const propertyID = this.loadedProperty
+
+        switch (propertyID) {
+            case 0:
+                this._customLengthArray =
+                    this._customLengthArray.map(() => this.defaultLength)
+                this.combinedPendulumLength = this.defaultLength * this.numPendulums
+                break
+            case 1:
+                this._customMassArray =
+                    this._customMassArray.map(() => this.defaultMass)
+                break
+            case 2:
+                this._customAnglePercentArray =
+                    this._customAnglePercentArray.map(() => this.defaultAnglePercent)
+                break
+            case 3:
+                this._customAngularVelocityArray =
+                    this._customAngularVelocityArray.map(() => this.defaultAngularVelocity)
+                break
+            default:
+                throw "Incorrect loaded property ID"
+        }
+
+        this.setLoadedProperty(propertyID, { bypass: true })
+    }
+
+    setPropertyElement(arrayIndex, element, rawNewValue) {
+        let newValue
+
+        if (rawNewValue === "") {
+            newValue = 1
+            element.value = 1
+        } else {
+            newValue = rawNewValue
+        }
+
+        switch (this.loadedProperty) {
+            case 0:
+                this._customLengthArray[arrayIndex] = newValue
+                break
+            case 1:
+                this._customMassArray[arrayIndex] = newValue
+                break
+            case 2:
+                this._customAnglePercentArray[arrayIndex] = newValue / 1.8
+                break
+            case 3:
+                this._customAngularVelocityArray[arrayIndex] = newValue * (2 * Math.PI)
+                break
+            default:
+                throw "Incorrect loaded property ID"
+        }
+
+        this.resetSimulationHandler()
+    }
+
+    ensureCustomLengthsInitialized() {
+        if (this._didInitialize_customLengths) {
+            return
+        }
+
+        this._didInitialize_customLengths = true
+
+        let defaultLength
+
+        if (!this.didUncheckLengthNormalization) {
+            defaultLength = Number((this.combinedPendulumLength / this.numPendulums).toFixed(4))
+            this.defaultLength = defaultLength
+        } else {
+            defaultLength = this.defaultLength
+        }
+
+        const propertyID_isLengths = this.loadedProperty === 0
+        const customLengths = this._customLengthArray
+
+        const propertyElementCount = this.hiddenPropertyContainerArray.length
+
+        for (let i = 0; i < propertyElementCount; ++i) {
+            customLengths[i] = defaultLength
+
+            if (propertyID_isLengths) {
+                const input_id = `pendulum-${i + 1}-input`
+                const inputElement = document.getElementById(input_id)
+
+                inputElement.value = defaultLength
+            }
+        }
+    }
+
+    ensureCustomMassesInitialized() {
+        if (this._didInitialize_customMasses) {
+            return
+        }
+
+        this._didInitialize_customMasses = true
+
+        const defaultMass = this.defaultMass
+
+        const propertyID_isMasses = this.loadedProperty === 1
+        const customMasses = this._customMassArray
+
+        const propertyElementCount = this.hiddenPropertyContainerArray.length
+
+        for (let i = 0; i < propertyElementCount; ++i) {
+            customMasses[i] = defaultMass
+
+            if (propertyID_isMasses) {
+                const input_id = `pendulum-${i + 1}-input`
+                const inputElement = document.getElementById(input_id)
+
+                inputElement.value = defaultMass
+            }
+        }
+    }
+
+    ensureCustomAnglePercentsInitialized() {
+        if (this._didInitialize_customAnglePercents) {
+            return
+        }
+
+        this._didInitialize_customAnglePercents = true
+
+        const defaultAnglePercent = this.defaultAnglePercent
+        const defaultAngleDegrees = Number((defaultAnglePercent * 1.8).toFixed(4))
+
+        const propertyID_isAnglePercents = this.loadedProperty === 2
+        const customAnglePercents = this._customAnglePercentArray
+
+        const propertyElementCount = this.hiddenPropertyContainerArray.length
+
+        for (let i = 0; i < propertyElementCount; ++i) {
+            customAnglePercents[i] = defaultAnglePercent
+
+            if (propertyID_isAnglePercents) {
+                const input_id = `pendulum-${i + 1}-input`
+                const inputElement = document.getElementById(input_id)
+
+                inputElement.value = defaultAngleDegrees
+            }
+        }
+    }
+
+    ensureCustomAngularVelocitiesInitialized() {
+        if (this._didInitialize_customAngularVelocities) {
+            return
+        }
+
+        this._didInitialize_customAngularVelocities = true
+
+        const defaultAngularVelocity = this.defaultAngularVelocity
+        let defaultAngularVelocityHz = defaultAngularVelocity / (2 * Math.PI)
+        defaultAngularVelocityHz = Number(defaultAngularVelocityHz.toFixed(4))
+
+        const propertyID_isAngularVelocities = this.loadedProperty === 3
+        const customAngularVelocities = this._customAngularVelocityArray
+
+        const propertyElementCount = this.hiddenPropertyContainerArray.length
+
+        for (let i = 0; i < propertyElementCount; ++i) {
+            customAngularVelocities[i] = defaultAngularVelocity
+
+            if (propertyID_isAngularVelocities) {
+                const input_id = `pendulum-${i + 1}-input`
+                const inputElement = document.getElementById(input_id)
+
+                inputElement.value = defaultAngularVelocityHz
+            }
+        }
+    }
+
     get lengths() {
         return this._getLengths({
             usingStoredRandom: false
@@ -231,9 +532,11 @@ export class SimulationPrototype {
                 case "endIsShorterLengths":
                     output = this.endIsShorterLengths
                     break
-                default:
+                case "customLengths":
                     output = this.customLengthArray
                     break
+                default:
+                    throw "Incorrect custom length type"
             }
 
             const combinedLength = output.reduce((a, b) => a + b, 0)
@@ -279,8 +582,10 @@ export class SimulationPrototype {
                     return this.endIsHeavierMasses
                 case "endIsLighterMasses":
                     return this.endIsLighterMasses
-                default:
+                case "customMasses":
                     return this.customMassArray
+                default:
+                    throw "Incorrect custom mass type"
             }
         }
     }
@@ -319,10 +624,11 @@ export class SimulationPrototype {
                 case "spiralAnglePercents":
                     output = this.spiralAnglePercents
                     break
-                default:
+                case "customAnglePercents":
                     output = this.customAnglePercentArray
                     break
-
+                default:
+                    throw "Incorrect custom angle type"
             }
         }
 
@@ -351,8 +657,10 @@ export class SimulationPrototype {
                         this.storedRandomAngularVelocities = output
                         return output
                     }
-                default:
+                case "customAngularVelocities":
                     return this.customAngularVelocityArray
+                default:
+                    throw "Incorrect custom angular velocity type"
             }
         }
     }
