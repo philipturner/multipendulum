@@ -210,7 +210,7 @@ export class Simulation {
         context.beginPath()
 
         const lastJointAdjustment = windowSize / (windowSize + 10)
-        const lengthMultiplier = (windowRadius / this.combinedPendulumLength) * lastJointAdjustment
+        const lengthMultiplier = (windowRadius / this.pendulumLengths.reduce((a, b) => a + b , 0)) * lastJointAdjustment
 
         const numStates = states.length
 
