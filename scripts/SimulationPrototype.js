@@ -522,9 +522,9 @@ export class SimulationPrototype {
                         output = this.randomLengths
                         this.storedRandomLengths = output
                     }
-
-                    const defaultLength = this.defaultLength
-                    output = output.map((a) => defaultLength * a)
+                    
+//                     const defaultLength = this.defaultLength
+//                     output = output.map((a) => defaultLength * a)
                     break
                 case "endIsLongerLengths":
                     output = this.endIsLongerLengths
@@ -575,9 +575,10 @@ export class SimulationPrototype {
                         output = this.randomMasses
                         this.storedRandomMasses = output
                     }
-
-                    const defaultMass = this.defaultMass
-                    return output.map((a) => defaultMass * a)
+                    
+                    return output
+//                     const defaultMass = this.defaultMass
+//                     return output.map((a) => defaultMass * a)
                 case "endIsHeavierMasses":
                     return this.endIsHeavierMasses
                 case "endIsLighterMasses":
@@ -803,7 +804,6 @@ export class SimulationPrototype {
 
         for (let i = 0; i < numPendulums; ++i) {
             output.push(mix(minAnglePercent, maxAnglePercent, Math.random()))
-
         }
 
         return output
