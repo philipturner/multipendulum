@@ -1,7 +1,7 @@
 import { Simulation } from "./Simulation.js"
 
 function mix(min, max, t) {
-    return min * (1 - t) + max * t
+    return (max - min) * t + min
 }
 
 export class SimulationPrototype {
