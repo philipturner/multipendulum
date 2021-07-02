@@ -287,7 +287,7 @@ export class StateEquations {
     // The `matrix` is a system of linear of equations representing angular velocities
     // The derivative of each value in that matrix is used to calculate forces
 
-    // Solving the `matrix` is has O(n^3) algorithmic complexity with respect to the number of pendulums
+    // Solving the `matrix` has O(n^3) algorithmic complexity with respect to the number of pendulums
     // Solving the `matrix derivative` has O(n^4) algorithmic complexity
 
     solveOnlyMatrix(angles, momenta) {
