@@ -811,7 +811,7 @@ export class SimulationPrototype {
 
     get staircaseAnglePercents() {
         const output = []
-
+        
         const numPendulums = this.numPendulums
 
         for (let i = 0; i < numPendulums; ++i) {
@@ -822,17 +822,18 @@ export class SimulationPrototype {
     }
 
     get spiralAnglePercents() {
-        const numPendulums = this.numPendulums
-
-        if (numPendulums === 1) {
-            return 51
-        }
-
         const output = []
+        
+        const numPendulums = this.numPendulums
+        
+        if (numPendulums === 1) {
+            output.push(51)
+            return output
+        }
 
         const minAnglePercent = 51
         const maxAnglePercent = 500
-
+        
         const multiplier = 1 / (numPendulums - 1)
 
         for (let i = 0; i < numPendulums; ++i) {
