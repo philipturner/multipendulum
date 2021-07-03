@@ -103,7 +103,7 @@ export class SimulationPrototype {
 
     get numPendulums() { return this._numPendulums }
     set numPendulums(rawNewValue) {
-        const newValue = Math.min(1000, Math.max(1, rawNewValue))
+        const newValue = Math.min(Math.max(1, rawNewValue), 1024)
         const previousNumPendulums = this.numPendulums
 
         if (previousNumPendulums < newValue) {
