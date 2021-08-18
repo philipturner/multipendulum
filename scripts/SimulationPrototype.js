@@ -516,7 +516,7 @@ export class SimulationPrototype {
         } else {
             switch (this.customLengthType) {
                 case "randomLengths":
-                    if (usingStoredRandom) {
+                    if (usingStoredRandom && (this.storedRandomLengths != null) && (this.storedRandomLengths.length === numPendulums)) {
                         output = this.storedRandomLengths
                     } else {
                         output = this.randomLengths
@@ -569,7 +569,7 @@ export class SimulationPrototype {
                 case "randomMasses":
                     let output
 
-                    if (usingStoredRandom) {
+                    if (usingStoredRandom && (this.storedRandomMasses != null) && (this.storedRandomMasses.length === numPendulums)) {
                         output = this.storedRandomMasses
                     } else {
                         output = this.randomMasses
@@ -612,7 +612,7 @@ export class SimulationPrototype {
         } else {
             switch (this.customAngleType) {
                 case "randomAnglePercents":
-                    if (usingStoredRandom) {
+                    if (usingStoredRandom && (this.storedRandomAnglePercents != null) && (this.storedRandomAnglePercents.length === numPendulums)) {
                         output = this.storedRandomAnglePercents
                     } else {
                         output = this.randomAnglePercents
@@ -651,7 +651,7 @@ export class SimulationPrototype {
         } else {
             switch (this.customAngularVelocityType) {
                 case "randomAngularVelocities":
-                    if (usingStoredRandom) {
+                    if (usingStoredRandom && (this.storedRandomAngularVelocities != null) && (this.storedRandomAngularVelocities.length === numPendulums)) {
                         return this.storedRandomAngularVelocities
                     } else {
                         const output = this.randomAngularVelocities
