@@ -56,7 +56,7 @@ export class SimulationPrototype {
     loadedProperty
 
     constructor() {
-        this.combinedPendulumLength = 1
+        this.combinedPendulumLength = 0.5
         this.gravitationalAcceleration = 9.8
 
         this.doingCustomLengths = false
@@ -85,7 +85,7 @@ export class SimulationPrototype {
         // 2: angle
         // 3: angularVelocity
 
-        this.numPendulums = 3
+        this.numPendulums = 2
     }
 
     get simulation() {
@@ -523,8 +523,6 @@ export class SimulationPrototype {
                         this.storedRandomLengths = output
                     }
                     
-//                     const defaultLength = this.defaultLength
-//                     output = output.map((a) => defaultLength * a)
                     break
                 case "endIsLongerLengths":
                     output = this.endIsLongerLengths
@@ -577,8 +575,6 @@ export class SimulationPrototype {
                     }
                     
                     return output
-//                     const defaultMass = this.defaultMass
-//                     return output.map((a) => defaultMass * a)
                 case "endIsHeavierMasses":
                     return this.endIsHeavierMasses
                 case "endIsLighterMasses":
