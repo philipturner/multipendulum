@@ -1,6 +1,6 @@
 # MultiPendulum
 
-Try out this simulation at [philipturner.github.io/multipendulum](https://philipturner.github.io/multipendulum).
+Try the simulation online at [philipturner.github.io/multipendulum](https://philipturner.github.io/multipendulum).
 
 This O(n^4) simulation shows an eye-catching manifestation of entropy in a system with zero nonconservative forces. Bump the number of pendulums up to 30 and simulate for 3.00 seconds to see it in action.
 
